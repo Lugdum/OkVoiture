@@ -21,7 +21,15 @@ describe('AppController (car)', () => {
     await connection.synchronize(true);
 
     carService = moduleFixture.get(CarService);
-    await carService.add({ make: 'Test Make', model: 'Test Model', year: 2004, id: 1, bookings: [], owner: null, imageUrl: null });
+    await carService.add({
+      make: 'Test Make',
+      model: 'Test Model',
+      year: 2004,
+      id: 1,
+      bookings: [],
+      owner: null,
+      imageUrl: null,
+    });
   });
 
   it('/cars (POST)', () => {
@@ -30,7 +38,7 @@ describe('AppController (car)', () => {
       .send({ make: 'New Make', model: 'New Model', year: 2023 })
       .expect(201)
       .expect('Content-Type', /json/)
-      .expect(response => {
+      .expect((response) => {
         expect(response.body).toHaveProperty('id');
         expect(response.body.make).toEqual('New Make');
         expect(response.body.model).toEqual('New Model');
@@ -43,7 +51,13 @@ describe('AppController (car)', () => {
       .get('/cars/1')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect({ id: 1, make: 'Test Make', model: 'Test Model', year: 2004, imageUrl: null });
+      .expect({
+        id: 1,
+        make: 'Test Make',
+        model: 'Test Model',
+        year: 2004,
+        imageUrl: null,
+      });
   });
 
   it('/cars/:id (DELETE)', () => {
@@ -58,7 +72,15 @@ describe('AppController (car)', () => {
       .get('/cars')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect([{ id: 1, make: 'Test Make', model: 'Test Model', year: 2004, imageUrl: null }]);
+      .expect([
+        {
+          id: 1,
+          make: 'Test Make',
+          model: 'Test Model',
+          year: 2004,
+          imageUrl: null,
+        },
+      ]);
   });
 
   afterEach(async () => {

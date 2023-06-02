@@ -1,4 +1,13 @@
-import { Controller, Get, Param, Delete, Post, Body, Put, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Post,
+  Body,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { BookingService } from '../service/booking.service';
 import { BookingEntity } from '../entity/booking.entity';
 
@@ -22,15 +31,19 @@ export class BookingController {
   }
 
   @Get('available/:id')
-  findAvailabe(@Param('id') id: number, @Query('startDate') startDate: Date, @Query('endDate') endDate: Date) {
+  findAvailabe(
+    @Param('id') id: number,
+    @Query('startDate') startDate: Date,
+    @Query('endDate') endDate: Date,
+  ) {
     return this.bookingService.findAvailabe(id, startDate, endDate);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number) {
-  const booking = await this.bookingService.findOne(id);
-  return booking;
-}
+    const booking = await this.bookingService.findOne(id);
+    return booking;
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
@@ -44,7 +57,7 @@ export class BookingController {
 
   @Put(':id')
   update(@Param('id') id: number, @Body() booking: BookingEntity) {
-    console.log(id)
+    console.log(id);
     return this.bookingService.update(id, booking);
   }
 }

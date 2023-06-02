@@ -16,7 +16,7 @@ async function bootstrap() {
   await app.listen(4000);
 }
 
-bootstrap().catch(err => {
+bootstrap().catch((err) => {
   console.error(err);
   process.exit(1);
 });

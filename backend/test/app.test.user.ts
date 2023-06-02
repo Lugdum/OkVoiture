@@ -22,7 +22,14 @@ describe('AppController (user)', () => {
     await connection.synchronize(true);
 
     userService = moduleFixture.get(UserService);
-    await userService.create({ name: 'Test User', email: 'test@example.com', id: 1, cars: [], role: UserRole.PARTICULIER, password: '1234' });
+    await userService.create({
+      name: 'Test User',
+      email: 'test@example.com',
+      id: 1,
+      cars: [],
+      role: UserRole.PARTICULIER,
+      password: '1234',
+    });
   });
 
   it('/users (POST)', () => {
@@ -31,7 +38,7 @@ describe('AppController (user)', () => {
       .send({ name: 'New User', email: 'new@example.com', password: '1234' })
       .expect(201)
       .expect('Content-Type', /json/)
-      .expect(response => {
+      .expect((response) => {
         expect(response.body).toHaveProperty('id');
         expect(response.body.name).toEqual('New User');
         expect(response.body.email).toEqual('new@example.com');
@@ -45,7 +52,13 @@ describe('AppController (user)', () => {
       .query({ email: 'test@example.com' })
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect({ id: 1, name: 'Test User', email: 'test@example.com', role: UserRole.PARTICULIER, password: '1234' });
+      .expect({
+        id: 1,
+        name: 'Test User',
+        email: 'test@example.com',
+        role: UserRole.PARTICULIER,
+        password: '1234',
+      });
   });
 
   it('/users/:id (DELETE)', () => {
@@ -60,7 +73,15 @@ describe('AppController (user)', () => {
       .get('/users')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect([{ id: 1, name: 'Test User', email: 'test@example.com', role: UserRole.PARTICULIER, password: '1234' }]);
+      .expect([
+        {
+          id: 1,
+          name: 'Test User',
+          email: 'test@example.com',
+          role: UserRole.PARTICULIER,
+          password: '1234',
+        },
+      ]);
   });
 
   afterEach(async () => {

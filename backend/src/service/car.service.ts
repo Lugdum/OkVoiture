@@ -16,20 +16,20 @@ export class CarService {
 
   findAllPerUser(userId: number): Promise<CarEntity[]> {
     return this.carsRepository
-      .createQueryBuilder("car")
-      .where("car.ownerId = :userId", { userId })
+      .createQueryBuilder('car')
+      .where('car.ownerId = :userId', { userId })
       .getMany();
   }
 
   findOne(id: number): Promise<CarEntity> {
     return this.carsRepository.findOne({
-      where: { id: id, },
+      where: { id: id },
     });
   }
 
   async remove(id: string): Promise<{ message: string }> {
     let a = await this.carsRepository.delete(id);
-    return { message: "Car deleted" };
+    return { message: 'Car deleted' };
   }
 
   async add(car: CarEntity): Promise<CarEntity> {

@@ -16,30 +16,34 @@ export class BookingService {
 
   findAllPerUser(userId: number): Promise<BookingEntity[]> {
     return this.bookingsRepository
-      .createQueryBuilder("booking")
-      .where("booking.userId = :userId", { userId })
+      .createQueryBuilder('booking')
+      .where('booking.userId = :userId', { userId })
       .getMany();
   }
 
   findAllPerCar(carId: number): Promise<BookingEntity[]> {
     return this.bookingsRepository
-      .createQueryBuilder("booking")
-      .where("booking.carId = :carId", { carId })
+      .createQueryBuilder('booking')
+      .where('booking.carId = :carId', { carId })
       .getMany();
   }
 
-  findAvailabe(carId: number, startDate: Date, endDate: Date): Promise<BookingEntity[]> {
+  findAvailabe(
+    carId: number,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<BookingEntity[]> {
     return this.bookingsRepository
-        .createQueryBuilder("booking")
-        .where("booking.carId = :carId", { carId })
-        .andWhere("booking.startDate < :endDate", { endDate })
-        .andWhere("booking.endDate > :startDate", { startDate })
-        .getMany();
+      .createQueryBuilder('booking')
+      .where('booking.carId = :carId', { carId })
+      .andWhere('booking.startDate < :endDate', { endDate })
+      .andWhere('booking.endDate > :startDate', { startDate })
+      .getMany();
   }
 
   async findOne(id: number): Promise<BookingEntity> {
     return this.bookingsRepository.findOne({
-      where: { id: id, },
+      where: { id: id },
     });
   }
 
@@ -54,11 +58,11 @@ export class BookingService {
 
   async update(id: number, bookingData: BookingEntity): Promise<BookingEntity> {
     const booking = await this.bookingsRepository.findOne({
-      where: { id: id, },
+      where: { id: id },
     });
 
     if (!booking)
       console.error("Booking not found mais ca devrait pas arriver j'espere");
     return this.bookingsRepository.save({ ...booking, ...bookingData });
-  }  
+  }
 }

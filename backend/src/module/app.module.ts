@@ -21,7 +21,7 @@ import { UserEntity } from '../entity/user.entity';
     }),
     CarModule,
     UserModule,
-    BookingModule
+    BookingModule,
   ],
 })
 export class AppModule {}

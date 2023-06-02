@@ -1,45 +1,52 @@
-import { useContext } from 'react';
-import { useRouter } from 'next/router';
-import { ModalContext } from '../contexts/modalContext';
-import { AuthContext } from '../contexts/AuthContext';
-import styles from '../styles/NavBar.module.css';
+import { useContext } from "react";
+import { useRouter } from "next/router";
+import { ModalContext } from "../contexts/modalContext";
+import { AuthContext } from "../contexts/AuthContext";
+import styles from "../styles/NavBar.module.css";
 
 const NavBar = () => {
-    const { setLoginModalIsOpen, setRegisterModalIsOpen } = useContext(ModalContext);
-    const { privilege, logout } = useContext(AuthContext);
-  
-    const router = useRouter();
+  const { setLoginModalIsOpen, setRegisterModalIsOpen } =
+    useContext(ModalContext);
+  const { privilege, logout } = useContext(AuthContext);
 
-    const handleLogoutClick = () => {
-      logout();
-    };
+  const router = useRouter();
 
-    const handleHomeClick = () => {
-      router.push('/listings');
-    };
-
-    const handleFormClick = () => {
-      router.push('/form');
-    };
-
-    return (
-      <nav className={styles.nav}>
-        <div className={styles.leftSide}>
-          {router.pathname !== '/listings' && privilege > 1 && <button onClick={handleHomeClick}>Home</button>}
-          {router.pathname !== '/form' && privilege > 1 && <button onClick={handleFormClick}>Form</button>}
-        </div>
-        <div className={styles.rightSide}>
-          {privilege > 0 ? (
-            <button onClick={handleLogoutClick}>Logout</button>
-          ) : (
-            <>
-              <button onClick={() => setLoginModalIsOpen(true)}>Login</button>
-              <button onClick={() => setRegisterModalIsOpen(true)}>Register</button>
-            </>
-          )}
-        </div>
-      </nav>
-    );
+  const handleLogoutClick = () => {
+    logout();
   };
-  
-  export default NavBar;
+
+  const handleHomeClick = () => {
+    router.push("/listings");
+  };
+
+  const handleFormClick = () => {
+    router.push("/form");
+  };
+
+  return (
+    <nav className={styles.nav}>
+      <div className={styles.leftSide}>
+        {router.pathname !== "/listings" && privilege > 1 && (
+          <button onClick={handleHomeClick}>Home</button>
+        )}
+        {router.pathname !== "/form" && privilege > 1 && (
+          <button onClick={handleFormClick}>Form</button>
+        )}
+      </div>
+      <div className={styles.rightSide}>
+        {privilege > 0 ? (
+          <button onClick={handleLogoutClick}>Logout</button>
+        ) : (
+          <>
+            <button onClick={() => setLoginModalIsOpen(true)}>Login</button>
+            <button onClick={() => setRegisterModalIsOpen(true)}>
+              Register
+            </button>
+          </>
+        )}
+      </div>
+    </nav>
+  );
+};
+
+export default NavBar;

@@ -1,95 +1,122 @@
-import { FC, useContext, useState } from 'react';
-import Modal from 'react-modal';
-import axios from 'axios';
-import { ModalContext } from '../contexts/modalContext';
-import { AuthContext } from '../contexts/AuthContext';
-import '../styles/Listings.module.css'
+import { FC, useContext, useState } from "react";
+import Modal from "react-modal";
+import axios from "axios";
+import { ModalContext } from "../contexts/modalContext";
+import { AuthContext } from "../contexts/AuthContext";
+import "../styles/Listings.module.css";
 
-Modal.setAppElement('#__next')
+Modal.setAppElement("#__next");
 
 const Register: FC = () => {
-    const { registerModalIsOpen, setRegisterModalIsOpen } = useContext(ModalContext);
+  const { registerModalIsOpen, setRegisterModalIsOpen } =
+    useContext(ModalContext);
 
-    const customStyles = {
-        content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)',
-        },
-        overlay: { zIndex: 1000 },
-    };
+  const customStyles = {
+    content: {
+      top: "50%",
+      left: "50%",
+      right: "auto",
+      bottom: "auto",
+      marginRight: "-50%",
+      transform: "translate(-50%, -50%)",
+    },
+    overlay: { zIndex: 1000 },
+  };
 
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [registerError, setRegisterError] = useState('');
-    const [role, setRole] = useState('particulier');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [registerError, setRegisterError] = useState("");
+  const [role, setRole] = useState("particulier");
 
-
-    const register_ok = async (email:string, name:string, password:string, role:string) => {
-        try {
-            console.log(email, name, password, role)
-            const response = await axios.post('http://localhost:4000/users', { email: email, name: name, password: password, role: role });
-            console.log(response.data);
-        if (!response.data.code) {
-            return true;
-        } 
-        } catch (error) {
-            console.error(error);
-        }
-
-        return false;
+  const register_ok = async (
+    email: string,
+    name: string,
+    password: string,
+    role: string
+  ) => {
+    try {
+      console.log(email, name, password, role);
+      const response = await axios.post("http://localhost:4000/users", {
+        email: email,
+        name: name,
+        password: password,
+        role: role,
+      });
+      console.log(response.data);
+      if (!response.data.code) {
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
     }
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
+    return false;
+  };
 
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-        setRegisterError("Format de l\'email incorrect");
-        return;
-        }
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        const isLoggedIn = await register_ok(email, name, password, role);
-        console.log(isLoggedIn);
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setRegisterError("Format de l'email incorrect");
+      return;
+    }
 
-        if (!isLoggedIn) {
-            setRegisterError("Cet email est déjà utilisé");
-        }
-        else {
-            setRegisterModalIsOpen(false);
-            setEmail('');
-            setPassword('');
-            setRegisterError('');
-        }
-    };
+    const isLoggedIn = await register_ok(email, name, password, role);
+    console.log(isLoggedIn);
 
-    return (
-        <Modal
-        isOpen={registerModalIsOpen}
-        onRequestClose={() => setRegisterModalIsOpen(false)}
-        style={customStyles}
-        contentLabel="Register Modal"
-        >
-        <h2>Connexion</h2>
-        <form onSubmit={handleRegister}>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nom d'utilisateur" required />
-            <input type="text" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" required />
+    if (!isLoggedIn) {
+      setRegisterError("Cet email est déjà utilisé");
+    } else {
+      setRegisterModalIsOpen(false);
+      setEmail("");
+      setPassword("");
+      setRegisterError("");
+    }
+  };
 
-            <select value={role} onChange={(e) => setRole(e.target.value)} required>
-                <option value="particulier">Particulier</option>
-                <option value="loueur">Loueur</option>
-            </select>
+  return (
+    <Modal
+      isOpen={registerModalIsOpen}
+      onRequestClose={() => setRegisterModalIsOpen(false)}
+      style={customStyles}
+      contentLabel="Register Modal"
+    >
+      <h2>Connexion</h2>
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Nom d'utilisateur"
+          required
+        />
+        <input
+          type="text"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Mot de passe"
+          required
+        />
 
-            <button type="submit">OK</button>
-            {registerError && <p>{registerError}</p>}
-        </form>
-        </Modal>
-    );
+        <select value={role} onChange={(e) => setRole(e.target.value)} required>
+          <option value="particulier">Particulier</option>
+          <option value="loueur">Loueur</option>
+        </select>
+
+        <button type="submit">OK</button>
+        {registerError && <p>{registerError}</p>}
+      </form>
+    </Modal>
+  );
 };
 
 export default Register;

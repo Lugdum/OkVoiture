@@ -3,5 +3,17 @@
     "@nestjs/swagger": "^6.3.0",
     "swagger-ui-express": "^4.6.3",
     "typeorm": "^0.3.16"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,json,css,md}": "prettier --write"
   }
 }

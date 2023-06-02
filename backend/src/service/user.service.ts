@@ -21,7 +21,10 @@ export class UserService {
     return a;
   }
 
-  async findOnePwd(@Query('email') email: string, @Query('password') password: string): Promise<UserEntity> {
+  async findOnePwd(
+    @Query('email') email: string,
+    @Query('password') password: string,
+  ): Promise<UserEntity> {
     let a = await this.usersRepository.findOne({
       where: { email, password },
     });
@@ -30,7 +33,7 @@ export class UserService {
 
   async remove(id: string): Promise<{ message: string }> {
     let a = await this.usersRepository.delete(id);
-    return { message: "User deleted"}
+    return { message: 'User deleted' };
   }
 
   async create(user: UserEntity): Promise<UserEntity> {

@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Delete, Post, Body, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Post,
+  Body,
+  Query,
+} from '@nestjs/common';
 import { UserService } from '../service/user.service';
 import { UserEntity } from '../entity/user.entity';
 
@@ -12,10 +20,12 @@ export class UserController {
   }
 
   @Get('log')
-  async findOne(@Query('email') email: string, @Query('password') password: string) {
+  async findOne(
+    @Query('email') email: string,
+    @Query('password') password: string,
+  ) {
     let a = await this.userService.findOnePwd(email, password);
-    if (!a)
-      return { message: "User not found", code: 404 }
+    if (!a) return { message: 'User not found', code: 404 };
     return a;
   }
 
@@ -27,8 +37,7 @@ export class UserController {
   @Post()
   async create(@Body() user: UserEntity) {
     let a = await this.userService.findOne(user.email);
-    if (a)
-      return { message: "Email already taken", code: 409 }
+    if (a) return { message: 'Email already taken', code: 409 };
     return this.userService.create(user);
   }
 }

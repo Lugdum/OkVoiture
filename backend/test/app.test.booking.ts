@@ -28,23 +28,57 @@ describe('AppController (booking)', () => {
     userService = moduleFixture.get(UserService);
     carService = moduleFixture.get(CarService);
     bookingService = moduleFixture.get(BookingService);
-    
-    const user = await userService.create({ name: 'Test User', email: 'test@example.com', id: 1, cars: [], role: UserRole.PARTICULIER, password: '1234' });
-    const car = await carService.add({ make: 'Test Make', model: 'Test Model', year: 2004, id: 1, bookings: [], owner: null, imageUrl: null });
-    
-    await bookingService.add({ startDate: new Date('2023-05-30'), endDate: new Date('2023-06-30'), user: user, car: car, id: 1, pricePerDay: 50, city: 'Papeete' });
+
+    const user = await userService.create({
+      name: 'Test User',
+      email: 'test@example.com',
+      id: 1,
+      cars: [],
+      role: UserRole.PARTICULIER,
+      password: '1234',
+    });
+    const car = await carService.add({
+      make: 'Test Make',
+      model: 'Test Model',
+      year: 2004,
+      id: 1,
+      bookings: [],
+      owner: null,
+      imageUrl: null,
+    });
+
+    await bookingService.add({
+      startDate: new Date('2023-05-30'),
+      endDate: new Date('2023-06-30'),
+      user: user,
+      car: car,
+      id: 1,
+      pricePerDay: 50,
+      city: 'Papeete',
+    });
   });
 
   it('/bookings (POST)', () => {
     return request(app.getHttpServer())
       .post('/bookings')
-      .send({ startDate: '2023-05-30', endDate: '2023-06-30', userId: 1, carId: 1, pricePerDay: 50, city: 'Papeete' })
+      .send({
+        startDate: '2023-05-30',
+        endDate: '2023-06-30',
+        userId: 1,
+        carId: 1,
+        pricePerDay: 50,
+        city: 'Papeete',
+      })
       .expect(201)
       .expect('Content-Type', /json/)
-      .expect(response => {
+      .expect((response) => {
         expect(response.body).toHaveProperty('id');
-        expect(new Date(response.body.startDate).toISOString().split('T')[0]).toEqual('2023-05-30');
-        expect(new Date(response.body.endDate).toISOString().split('T')[0]).toEqual('2023-06-30');
+        expect(
+          new Date(response.body.startDate).toISOString().split('T')[0],
+        ).toEqual('2023-05-30');
+        expect(
+          new Date(response.body.endDate).toISOString().split('T')[0],
+        ).toEqual('2023-06-30');
         expect(response.body.userId).toEqual(1);
         expect(response.body.carId).toEqual(1);
       });
@@ -55,10 +89,14 @@ describe('AppController (booking)', () => {
       .get('/bookings/1')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect(response => {
+      .expect((response) => {
         expect(response.body).toHaveProperty('id', 1);
-        expect(new Date(response.body.startDate).toISOString().split('T')[0]).toEqual('2023-05-30');
-        expect(new Date(response.body.endDate).toISOString().split('T')[0]).toEqual('2023-06-30');
+        expect(
+          new Date(response.body.startDate).toISOString().split('T')[0],
+        ).toEqual('2023-05-30');
+        expect(
+          new Date(response.body.endDate).toISOString().split('T')[0],
+        ).toEqual('2023-06-30');
         expect(response.body.user.id).toEqual(1);
         expect(response.body.car.id).toEqual(1);
       });
@@ -76,11 +114,15 @@ describe('AppController (booking)', () => {
       .get('/bookings')
       .expect(200)
       .expect('Content-Type', /json/)
-      .expect(response => {
+      .expect((response) => {
         expect(response.body.length).toBeGreaterThan(0);
         expect(response.body[0]).toHaveProperty('id', 1);
-        expect(new Date(response.body[0].startDate).toISOString().split('T')[0]).toEqual('2023-05-30');
-        expect(new Date(response.body[0].endDate).toISOString().split('T')[0]).toEqual('2023-06-30');
+        expect(
+          new Date(response.body[0].startDate).toISOString().split('T')[0],
+        ).toEqual('2023-05-30');
+        expect(
+          new Date(response.body[0].endDate).toISOString().split('T')[0],
+        ).toEqual('2023-06-30');
         expect(response.body[0].user.id).toEqual(1);
         expect(response.body[0].car.id).toEqual(1);
       });
