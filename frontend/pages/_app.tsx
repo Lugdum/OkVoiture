@@ -7,6 +7,7 @@ import Navbar from "../src/components/NavBar";
 import Login from "../src/components/Login";
 import Register from "../src/components/Register"; // import Register component
 import { useState } from "react";
+import '../src/app/globals.css'
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const [loginModalIsOpen, setLoginModalIsOpen] = useState(false);

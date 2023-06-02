@@ -100,10 +100,11 @@ const Form = () => {
           `http://localhost:4000/bookings/car/${selectedCar}`
         );
         setBookings(response.data);
+        console.log("here")
       }
     };
     fetchBookings();
-  }, [selectedCar, selectedCarEdit]);
+  }, [selectedCarEdit]);
 
   // Update edit booking scroll bar
   useEffect(() => {
@@ -282,15 +283,15 @@ const Form = () => {
   };
 
   return (
-    <div className={`${styles.formDiv}`}>
+    <div className="flex justify-center items-center h-[80vh]">
       {/* Form to add a car */}
-      <form className={styles.form} onSubmit={submitCar}>
+      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md h-[50vh] ${styles.form}`} onSubmit={submitCar}>
         <label className={styles.label}>
           <strong>Voiture</strong>
         </label>
         <label className={styles.label}>Marque</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="text"
           value={make}
           onChange={(e) => setMake(e.target.value)}
@@ -299,7 +300,7 @@ const Form = () => {
 
         <label className={styles.label}>Modèle</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="text"
           value={model}
           onChange={(e) => setModel(e.target.value)}
@@ -308,7 +309,7 @@ const Form = () => {
 
         <label className={styles.label}>Année</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="number"
           value={year}
           onChange={(e) => setYear(e.target.value)}
@@ -317,14 +318,14 @@ const Form = () => {
 
         <label className={styles.label}>URL de l'image</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="text"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
 
         <button
-          className={styles.button}
+          className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
           type="submit"
           style={{ color: "black" }}
         >
@@ -333,13 +334,13 @@ const Form = () => {
       </form>
 
       {/* Form to add a booking */}
-      <form className={styles.form} onSubmit={submitBooking}>
+      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md h-[59vh] ${styles.form}`} onSubmit={submitBooking}>
         <label className={styles.label}>
           <strong>Reservation</strong>
         </label>
         <label className={styles.label}>Date de début</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="date"
           value={startDate}
           onChange={(e) => setStartDate(e.target.value)}
@@ -348,7 +349,7 @@ const Form = () => {
 
         <label className={styles.label}>Date de fin</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="date"
           value={endDate}
           onChange={(e) => setEndDate(e.target.value)}
@@ -357,7 +358,7 @@ const Form = () => {
 
         <label className={styles.label}>Prix par jour</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="number"
           value={pricePerDay}
           onChange={(e) => setPricePerDay(e.target.value)}
@@ -366,7 +367,7 @@ const Form = () => {
 
         <label className={styles.label}>Ville</label>
         <input
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           type="text"
           value={city}
           onChange={(e) => setCity(e.target.value)}
@@ -377,7 +378,7 @@ const Form = () => {
 
         {/* Scroll bar to select a car */}
         <select
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           required
           onChange={(e) => setSelectedCar(Number(e.target.value))}
         >
@@ -394,7 +395,7 @@ const Form = () => {
         )}
 
         <button
-          className={styles.button}
+          className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
           type="submit"
           style={{ color: "black" }}
         >
@@ -403,14 +404,14 @@ const Form = () => {
       </form>
 
       {/* Form to edit a booking */}
-      <form className={styles.form} onSubmit={submitEditBooking}>
+      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md ${selectedCarEdit ? (selectedBooking? 'h-[68vh]' : 'h-[19vh]') : 'h-[13vh]'} ${styles.form}`} onSubmit={submitEditBooking}>
         <label className={styles.label}>
           <strong>Gérer les réservations</strong>
         </label>
 
         {/* Scroll bar to select a car */}
         <select
-          className={styles.input}
+          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
           value={selectedCarEdit || ""}
           required
           onChange={(e) => setSelectedCarEdit(Number(e.target.value))}
@@ -424,10 +425,10 @@ const Form = () => {
         </select>
 
         {/* Scroll bar to select a booking */}
-        {selectedCarEdit && (
+        {selectedCarEdit? (
           <>
             <select
-              className={styles.input}
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               value={selectedBooking ? selectedBooking.id : ""}
               required
               onChange={(e) => {
@@ -445,14 +446,14 @@ const Form = () => {
               ))}
             </select>
           </>
-        )}
+        ): ""}
 
         {/* Car property fields */}
-        {selectedBooking && (
+        {selectedCarEdit && selectedBooking? (
           <>
             <label className={styles.label}>Date de début</label>
             <input
-              className={styles.input}
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="date"
               value={startDateEdit}
               onChange={(e) => setStartDateEdit(e.target.value)}
@@ -460,7 +461,7 @@ const Form = () => {
 
             <label className={styles.label}>Date de fin</label>
             <input
-              className={styles.input}
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="date"
               value={endDateEdit}
               onChange={(e) => setEndDateEdit(e.target.value)}
@@ -468,7 +469,7 @@ const Form = () => {
 
             <label className={styles.label}>Prix par jour</label>
             <input
-              className={styles.input}
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="number"
               value={pricePerDayEdit}
               onChange={(e) => setPricePerDayEdit(e.target.value)}
@@ -476,21 +477,21 @@ const Form = () => {
 
             <label className={styles.label}>Ville</label>
             <input
-              className={styles.input}
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
               value={cityEdit}
               onChange={(e) => setCityEdit(e.target.value)}
             />
 
             <button
-              className={styles.button}
+              className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
               type="submit"
               style={{ color: "black" }}
             >
               Editer
             </button>
             <button
-              className={styles.button}
+              className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
               type="button"
               style={{ color: "black" }}
               onClick={deleteBooking}
@@ -498,7 +499,7 @@ const Form = () => {
               Supprimer
             </button>
           </>
-        )}
+        ):""}
       </form>
     </div>
   );

@@ -23,6 +23,10 @@ const NavBar = () => {
     router.push("/form");
   };
 
+  const handleAdminClick = () => {
+    router.push("/admin");
+  };
+
   return (
     <nav className={styles.nav}>
       <div className={styles.leftSide}>
@@ -31,6 +35,9 @@ const NavBar = () => {
         )}
         {router.pathname !== "/form" && privilege > 1 && (
           <button onClick={handleFormClick}>Form</button>
+        )}
+        {router.pathname !== "/admin" && privilege > 2 && (
+          <button onClick={handleAdminClick}>Admin</button>
         )}
       </div>
       <div className={styles.rightSide}>
