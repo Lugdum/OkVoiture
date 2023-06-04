@@ -28,17 +28,9 @@ export class BookingEntity {
   @Column({ type: 'date' })
   endDate: Date;
 
-  @ApiProperty({ example: 50, description: 'Price per day of the booking' })
-  @Column()
-  pricePerDay: number;
-
-  @ApiProperty({ example: 'Papeete', description: 'City of the booking' })
-  @Column()
-  city: string;
-
   @ApiProperty({
     type: () => UserEntity,
-    description: 'The user of the booking (join)',
+    description: 'The user who booked the car (join)',
   })
   @ManyToOne(() => UserEntity, { eager: true })
   user: UserEntity;

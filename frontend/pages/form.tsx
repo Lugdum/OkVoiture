@@ -25,54 +25,31 @@ const Form = () => {
     }
   }, [user, router]);
 
-  // Booking Infos
-  interface Booking {
-    id: number;
-    startDate: string;
-    endDate: string;
-    pricePerDay: string;
-    city: string;
-    car: number;
-    user: number;
-  }
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [errorMessageBooking, setErrorMessageBooking] = useState<string | null>(
-    null
-  );
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
-  const [pricePerDay, setPricePerDay] = useState("");
-  const [city, setCity] = useState("");
-  // Edit Booking Infos
-  const [startDateEdit, setStartDateEdit] = useState(
-    selectedBooking?.startDate || ""
-  );
-  const [endDateEdit, setEndDateEdit] = useState(
-    selectedBooking?.endDate || ""
-  );
-  const [pricePerDayEdit, setPricePerDayEdit] = useState(
-    selectedBooking?.pricePerDay || ""
-  );
-  const [cityEdit, setCityEdit] = useState(selectedBooking?.city || "");
-
   // Car infos
   interface Car {
     id: number;
     make: string;
     model: string;
-    year: string;
+    year: number;
+    pricePerDay: number;
     imageUrl: string;
     owner: number;
   }
-  const [selectedCarEdit, setSelectedCarEdit] = useState<number | null>(null);
   const [cars, setCars] = useState<Car[]>([]);
-  const [selectedCar, setSelectedCar] = useState<number | null>(null);
-  const [errorMessageCar, setErrorMessageCar] = useState<string | null>(null);
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
+  const [city, setCity] = useState("");
   const [year, setYear] = useState("");
+  const [pricePerDay, setPricePerDay] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+
+  const [selectedCarEdit, setSelectedCarEdit] = useState<number | null>(null);
+  const [makeEdit, setMakeEdit] = useState("");
+  const [modelEdit, setModelEdit] = useState("");
+  const [cityEdit, setCityEdit] = useState("");
+  const [yearEdit, setYearEdit] = useState("");
+  const [pricePerDayEdit, setPricePerDayEdit] = useState("");
+  const [imageEdit, setImageEdit] = useState("");
 
   // Update cars scroll bar
   useEffect(() => {
@@ -80,57 +57,18 @@ const Form = () => {
       try {
         if (!user) return;
         let id = user?.id;
-        const responseCar = await axios.get(
-          `http://localhost:4000/cars/usr/${id}`
-        );
-        setCars(responseCar.data);
+        let response = null;
+        if (user?.role === "admin")
+          response = await axios.get(`http://localhost:4000/cars`);
+        else
+          response = await axios.get(`http://localhost:4000/cars/usr/${id}`);
+        setCars(response.data);
       } catch (error) {
         console.error(error);
       }
     };
     fetchCars();
   }, [user?.id]);
-
-  // Update bookings scroll bar
-  useEffect(() => {
-    const fetchBookings = async () => {
-      if (selectedCar) {
-        // console.log('Fetching bookings for car', selectedCar);
-        const response = await axios.get(
-          `http://localhost:4000/bookings/car/${selectedCar}`
-        );
-        setBookings(response.data);
-        console.log("here")
-      }
-    };
-    fetchBookings();
-  }, [selectedCarEdit]);
-
-  // Update edit booking scroll bar
-  useEffect(() => {
-    const fetchBookings = async () => {
-      if (selectedCarEdit) {
-        // console.log('Fetching bookings for car', selectedCarEdit);
-        const response = await axios.get(
-          `http://localhost:4000/bookings/car/${selectedCarEdit}`
-        );
-        setBookings(response.data);
-        setSelectedBooking(null);
-      } else {
-        // Reset bookings if no car is selected
-        setBookings([]);
-      }
-    };
-    fetchBookings();
-  }, [selectedCarEdit]);
-
-  // Reset edit fields when a new booking is selected
-  useEffect(() => {
-    setStartDateEdit(selectedBooking?.startDate || "");
-    setEndDateEdit(selectedBooking?.endDate || "");
-    setPricePerDayEdit(selectedBooking?.pricePerDay || "");
-    setCityEdit(selectedBooking?.city || "");
-  }, [selectedBooking]);
 
   // Call API to add a car
   const submitCar = async (e: React.FormEvent) => {
@@ -140,19 +78,22 @@ const Form = () => {
         make: make,
         model: model,
         year: year,
+        city: city,
+        pricePerDay: pricePerDay,
         imageUrl: imageUrl,
         owner: user?.id,
       });
       if (carResponse.status !== 201) {
-        setErrorMessageCar("Erreur lors de l'ajout de la voiture");
+        console.log("Erreur lors de l'ajout de la voiture mais ca devrait pas arriver");
       }
       // Reset fields and add car to scroll bar
       else {
-        setErrorMessageCar(null);
         setCars([...cars, carResponse.data]);
         setMake("");
         setModel("");
         setYear("");
+        setCity("");
+        setPricePerDay("");
         setImageUrl("");
       }
     } catch (error) {
@@ -160,123 +101,47 @@ const Form = () => {
     }
   };
 
-  const checkAvailability = async () => {
-    // console.log('Checking availability...');
-    try {
-      const availabilityResponse = await axios.get(
-        `http://localhost:4000/bookings/available/${selectedCar}`,
-        {
-          params: {
-            startDate: startDate,
-            endDate: endDate,
-          },
-        }
-      );
-      if (availabilityResponse.data.length !== 0) {
-        // console.log('Car not available');
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  };
-
-  // Call API to add a booking
-  const submitBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (startDate >= endDate) {
-      setErrorMessageBooking("Les dates entrées sont invalides");
-      return;
-    }
-    if (!(await checkAvailability())) {
-      // console.log('Setting error message');
-      setErrorMessageBooking("La voiture n'est pas disponible à cette date");
-      return;
-    }
-    try {
-      const bookingResponse = await axios.post(
-        "http://localhost:4000/bookings",
-        {
-          startDate: startDate,
-          endDate: endDate,
-          pricePerDay: pricePerDay,
-          city: city,
-          car: selectedCar,
-          user: user?.id,
-        }
-      );
-      if (bookingResponse.status !== 201) {
-        setErrorMessageBooking("Erreur lors de l'ajout de la reservation");
-      } else {
-        // Reset fields and add car to scroll bar
-        setErrorMessageBooking(null);
-        setStartDate("");
-        setEndDate("");
-        setPricePerDay("");
-        setCity("");
-        setBookings([...bookings, bookingResponse.data]);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Call API to edit a booking
-  const submitEditBooking = async (e: React.FormEvent) => {
+  const submitEditCar = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      let id = selectedBooking?.id;
-      const bookingResponse = await axios.put(
-        `http://localhost:4000/bookings/${id}`,
-        {
-          startDate: startDateEdit,
-          endDate: endDateEdit,
-          pricePerDay: pricePerDayEdit,
+      if (selectedCarEdit) {
+        const carResponse = await axios.put(`http://localhost:4000/cars/${selectedCarEdit}`, {
+          make: makeEdit,
+          model: modelEdit,
+          year: yearEdit,
           city: cityEdit,
+          pricePerDay: pricePerDayEdit,
+          imageUrl: imageEdit,
+          owner: user?.id,
+        });
+        if (carResponse.status !== 200) {
+          console.log("Erreur lors de la modification de la voiture ca devrait pas arriver non plus");
         }
-      );
-      if (bookingResponse.status !== 200) {
-      } else {
-        // Reset fields and add car to scroll bar
-        setErrorMessageBooking(null);
-        setStartDateEdit("");
-        setEndDateEdit("");
-        setPricePerDayEdit("");
-        setCityEdit("");
-        setSelectedBooking(null);
-        setSelectedCarEdit(null);
-        const updatedBookings = bookings.map((booking) =>
-          booking.id === bookingResponse.data.id
-            ? bookingResponse.data
-            : booking
-        );
-        setBookings(updatedBookings);
+        // Update car in state
+        else {
+          const updatedCars = cars.map(car => car.id === selectedCarEdit ? carResponse.data : car);
+          setCars(updatedCars);
+        }
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Call API to delete a booking
-  const deleteBooking = async () => {
+  const deleteCar = async () => {
     try {
-      let id = selectedBooking?.id;
-      const response = await axios.delete(
-        `http://localhost:4000/bookings/${id}`
-      );
-
-      if (response.status !== 200) {
-        console.error("Erreur lors de la suppression de la réservation");
-        return;
+      if (selectedCarEdit) {
+        const carResponse = await axios.delete(`http://localhost:4000/cars/${selectedCarEdit}`);
+        if (carResponse.status !== 200) {
+          console.log("Erreur lors de la suppression de la voiture comme d'hab ca arrivera pas");
+        }
+        // Remove car from state
+        else {
+          const updatedCars = cars.filter(car => car.id !== selectedCarEdit);
+          setCars(updatedCars);
+          setSelectedCarEdit(null);
+        }
       }
-
-      // Remove booking from scroll bar
-      const updatedBookings = bookings.filter((b) => b.id !== id);
-      setBookings(updatedBookings);
-      setSelectedBooking(null);
-      setSelectedCarEdit(null);
     } catch (error) {
       console.error(error);
     }
@@ -285,128 +150,78 @@ const Form = () => {
   return (
     <div className="flex justify-center items-center h-[80vh]">
       {/* Form to add a car */}
-      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md h-[50vh] ${styles.form}`} onSubmit={submitCar}>
+      {user?.role === "loueur"? (
+        <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md h-[67vh] mt-20 ${styles.form}`} onSubmit={submitCar}>
+          <label className={styles.label}>
+            <strong>Voiture</strong>
+          </label>
+          <label className={styles.label}>Marque</label>
+          <input
+            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+            type="text"
+            value={make}
+            onChange={(e) => setMake(e.target.value)}
+            required
+          />
+
+          <label className={styles.label}>Modèle</label>
+          <input
+            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+            type="text"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            required
+          />
+
+          <label className={styles.label}>Year</label>
+          <input
+            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+            type="number"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            required
+          />
+
+          <label className={styles.label}>City</label>
+          <input
+            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            required
+          />
+
+          <label className={styles.label}>Prix par jour</label>
+          <input
+            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+            type="number"
+            value={pricePerDay}
+            onChange={(e) => setPricePerDay(e.target.value)}
+            required
+          />
+
+          <label className={styles.label}>URL de l'image</label>
+          <input
+            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+            type="text"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+          />
+
+          <button
+            className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
+            type="submit"
+            style={{ color: "black" }}
+          >
+            Ajouter
+          </button>
+        </form>
+      ) : null}
+
+      {/* Form to edit a car */}
+      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md mt-20 ${selectedCarEdit ? (user?.role === "loueur" ? 'h-[79vh]':'h-[19vh]') : 'h-[13vh]'} ${styles.form}`} onSubmit={submitEditCar}>
         <label className={styles.label}>
-          <strong>Voiture</strong>
-        </label>
-        <label className={styles.label}>Marque</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="text"
-          value={make}
-          onChange={(e) => setMake(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>Modèle</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="text"
-          value={model}
-          onChange={(e) => setModel(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>Année</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="number"
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>URL de l'image</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="text"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
-
-        <button
-          className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
-          type="submit"
-          style={{ color: "black" }}
-        >
-          Ajouter
-        </button>
-      </form>
-
-      {/* Form to add a booking */}
-      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md h-[59vh] ${styles.form}`} onSubmit={submitBooking}>
-        <label className={styles.label}>
-          <strong>Reservation</strong>
-        </label>
-        <label className={styles.label}>Date de début</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="date"
-          value={startDate}
-          onChange={(e) => setStartDate(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>Date de fin</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="date"
-          value={endDate}
-          onChange={(e) => setEndDate(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>Prix par jour</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="number"
-          value={pricePerDay}
-          onChange={(e) => setPricePerDay(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>Ville</label>
-        <input
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          type="text"
-          value={city}
-          onChange={(e) => setCity(e.target.value)}
-          required
-        />
-
-        <label className={styles.label}>Voiture</label>
-
-        {/* Scroll bar to select a car */}
-        <select
-          className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-          required
-          onChange={(e) => setSelectedCar(Number(e.target.value))}
-        >
-          <option value="">-- Choisissez une voiture --</option>
-          {cars.map((car) => (
-            <option key={car.id} value={car.id}>
-              {car.make} {car.model} ({car.year})
-            </option>
-          ))}
-        </select>
-
-        {errorMessageBooking && (
-          <p className="text-red-700 text-lg">{errorMessageBooking}</p>
-        )}
-
-        <button
-          className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
-          type="submit"
-          style={{ color: "black" }}
-        >
-          Ajouter
-        </button>
-      </form>
-
-      {/* Form to edit a booking */}
-      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md ${selectedCarEdit ? (selectedBooking? 'h-[68vh]' : 'h-[19vh]') : 'h-[13vh]'} ${styles.form}`} onSubmit={submitEditBooking}>
-        <label className={styles.label}>
-          <strong>Gérer les réservations</strong>
+          <strong>Gérer les voitures</strong>
         </label>
 
         {/* Scroll bar to select a car */}
@@ -424,50 +239,26 @@ const Form = () => {
           ))}
         </select>
 
-        {/* Scroll bar to select a booking */}
-        {selectedCarEdit? (
-          <>
-            <select
-              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-              value={selectedBooking ? selectedBooking.id : ""}
-              required
-              onChange={(e) => {
-                const booking = bookings.find(
-                  (b) => b.id === Number(e.target.value)
-                );
-                setSelectedBooking(booking ? booking : null);
-              }}
-            >
-              <option value="">-- Choisissez une réservation --</option>
-              {bookings.map((booking) => (
-                <option key={booking.id} value={booking.id}>
-                  {booking.startDate} - {booking.endDate} ({booking.city})
-                </option>
-              ))}
-            </select>
-          </>
-        ): ""}
-
         {/* Car property fields */}
-        {selectedCarEdit && selectedBooking? (
+        {(selectedCarEdit && user?.role === "loueur")? (
           <>
-            <label className={styles.label}>Date de début</label>
+            <label className={styles.label}>Make of the car</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-              type="date"
-              value={startDateEdit}
-              onChange={(e) => setStartDateEdit(e.target.value)}
+              type="text"
+              value={makeEdit}
+              onChange={(e) => setMakeEdit(e.target.value)}
             />
 
-            <label className={styles.label}>Date de fin</label>
+            <label className={styles.label}>Model of the car</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-              type="date"
-              value={endDateEdit}
-              onChange={(e) => setEndDateEdit(e.target.value)}
+              type="text"
+              value={modelEdit}
+              onChange={(e) => setModelEdit(e.target.value)}
             />
 
-            <label className={styles.label}>Prix par jour</label>
+            <label className={styles.label}>Price per day</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="number"
@@ -475,7 +266,7 @@ const Form = () => {
               onChange={(e) => setPricePerDayEdit(e.target.value)}
             />
 
-            <label className={styles.label}>Ville</label>
+            <label className={styles.label}>City</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
@@ -483,23 +274,43 @@ const Form = () => {
               onChange={(e) => setCityEdit(e.target.value)}
             />
 
+            <label className={styles.label}>Year</label>
+            <input
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+              type="text"
+              value={yearEdit}
+              onChange={(e) => setYearEdit(e.target.value)}
+            />
+
+            <label className={styles.label}>Ville</label>
+            <input
+              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
+              type="text"
+              value={imageEdit}
+              onChange={(e) => setImageEdit(e.target.value)}
+            />
+
             <button
-              className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
+              className={`mb-2 px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
               type="submit"
               style={{ color: "black" }}
             >
               Editer
             </button>
-            <button
-              className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
-              type="button"
-              style={{ color: "black" }}
-              onClick={deleteBooking}
-            >
-              Supprimer
-            </button>
           </>
-        ):""}
+        ) : ""}
+
+        {/* Delete car button */}
+        {selectedCarEdit? (
+          <button
+          className={`px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400`}
+          type="button"
+          style={{ color: "black" }}
+          onClick={deleteCar}
+          >
+          Supprimer
+          </button>
+        ) : ""}
       </form>
     </div>
   );

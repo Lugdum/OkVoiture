@@ -27,18 +27,22 @@ const NavBar = () => {
     router.push("/admin");
   };
 
+  const handleBookingsClick = () => {
+    router.push("/edit");
+  };
+
   return (
     <nav className={styles.nav}>
       <div className={styles.leftSide}>
-        {router.pathname !== "/listings" && privilege > 1 && (
+        {(router.pathname !== "/listings" && privilege > 1 || router.pathname == "/edit")? (
           <button onClick={handleHomeClick}>Home</button>
-        )}
-        {router.pathname !== "/form" && privilege > 1 && (
+        ): ""}
+        {(router.pathname !== "/form" && privilege > 1)? (
           <button onClick={handleFormClick}>Form</button>
-        )}
-        {router.pathname !== "/admin" && privilege > 2 && (
-          <button onClick={handleAdminClick}>Admin</button>
-        )}
+        ): ""}
+        {(router.pathname !== "/edit" && privilege !== 2)? (
+          <button onClick={handleBookingsClick}>Bookings</button>
+        ): ""}
       </div>
       <div className={styles.rightSide}>
         {privilege > 0 ? (

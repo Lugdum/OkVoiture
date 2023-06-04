@@ -31,17 +31,29 @@ describe('AppController (booking)', () => {
 
     const user = await userService.create({
       name: 'Test User',
-      email: 'test@example.com',
+      email: 'user@example.com',
       id: 1,
       cars: [],
       role: UserRole.PARTICULIER,
       password: '1234',
     });
+
+    const owner = await userService.create({
+      name: 'Test Owner',
+      email: 'owner@example.com',
+      id: 1,
+      cars: [],
+      role: UserRole.LOUEUR,
+      password: '1234',
+    });
+
     const car = await carService.add({
+      id: 1,
       make: 'Test Make',
       model: 'Test Model',
       year: 2004,
-      id: 1,
+      pricePerDay: 30,
+      city: 'Papeete',
       bookings: [],
       owner: null,
       imageUrl: null,
@@ -53,8 +65,6 @@ describe('AppController (booking)', () => {
       user: user,
       car: car,
       id: 1,
-      pricePerDay: 50,
-      city: 'Papeete',
     });
   });
 
@@ -66,7 +76,6 @@ describe('AppController (booking)', () => {
         endDate: '2023-06-30',
         userId: 1,
         carId: 1,
-        pricePerDay: 50,
         city: 'Papeete',
       })
       .expect(201)

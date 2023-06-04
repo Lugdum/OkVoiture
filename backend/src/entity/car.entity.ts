@@ -26,6 +26,14 @@ export class CarEntity {
   @Column()
   year: number;
 
+  @ApiProperty({ example: 'Papeete', description: 'The city of the car' })
+  @Column()
+  city: string;
+
+  @ApiProperty({ example: 30, description: 'The price per day of the car' })
+  @Column()
+  pricePerDay: number;
+
   @ApiProperty({
     example: 'https://www.largus.fr/images/images/ORPHEA_105286_1.jpg',
     description: 'The URL of the car image',

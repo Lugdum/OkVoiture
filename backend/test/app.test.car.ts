@@ -22,10 +22,12 @@ describe('AppController (car)', () => {
 
     carService = moduleFixture.get(CarService);
     await carService.add({
+      id: 1,
       make: 'Test Make',
       model: 'Test Model',
+      city: 'Papeete',
       year: 2004,
-      id: 1,
+      pricePerDay: 30,
       bookings: [],
       owner: null,
       imageUrl: null,
@@ -35,13 +37,20 @@ describe('AppController (car)', () => {
   it('/cars (POST)', () => {
     return request(app.getHttpServer())
       .post('/cars')
-      .send({ make: 'New Make', model: 'New Model', year: 2023 })
+      .send({
+        make: 'New Make',
+        model: 'New Model',
+        city: 'Papeete',
+        year: 2023,
+        pricePerDay: 30,
+      })
       .expect(201)
       .expect('Content-Type', /json/)
       .expect((response) => {
         expect(response.body).toHaveProperty('id');
         expect(response.body.make).toEqual('New Make');
         expect(response.body.model).toEqual('New Model');
+        expect(response.body.city).toEqual('Papeete');
         expect(response.body.year).toEqual(2023);
       });
   });
@@ -55,7 +64,9 @@ describe('AppController (car)', () => {
         id: 1,
         make: 'Test Make',
         model: 'Test Model',
+        city: 'Papeete',
         year: 2004,
+        pricePerDay: 30,
         imageUrl: null,
       });
   });
@@ -78,6 +89,8 @@ describe('AppController (car)', () => {
           make: 'Test Make',
           model: 'Test Model',
           year: 2004,
+          city: 'Papeete',
+          pricePerDay: 30,
           imageUrl: null,
         },
       ]);
