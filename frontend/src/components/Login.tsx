@@ -55,7 +55,7 @@ const Login: FC = () => {
     e.preventDefault();
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email) && email != 'admin') {
+    if (!emailRegex.test(email) && email != "admin") {
       setLoginError("Format de l'email incorrect");
       return;
     }

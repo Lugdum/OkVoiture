@@ -1,4 +1,12 @@
-import { Controller, Get, Param, Delete, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Delete,
+  Post,
+  Body,
+  Put,
+} from '@nestjs/common';
 import { CarService } from '../service/car.service';
 import { CarEntity } from '../entity/car.entity';
 
@@ -29,5 +37,10 @@ export class CarController {
   @Post()
   create(@Body() car: CarEntity) {
     return this.carService.add(car);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: number, @Body() car: CarEntity) {
+    return this.carService.update(id, car);
   }
 }

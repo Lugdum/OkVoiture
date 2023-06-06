@@ -34,15 +34,22 @@ const NavBar = () => {
   return (
     <nav className={styles.nav}>
       <div className={styles.leftSide}>
-        {(router.pathname !== "/listings" && privilege > 1 || router.pathname == "/edit")? (
+        {(router.pathname !== "/listings" && privilege > 1) ||
+        router.pathname == "/edit" ? (
           <button onClick={handleHomeClick}>Home</button>
-        ): ""}
-        {(router.pathname !== "/form" && privilege > 1)? (
+        ) : (
+          ""
+        )}
+        {router.pathname !== "/form" && privilege > 1 ? (
           <button onClick={handleFormClick}>Form</button>
-        ): ""}
-        {(router.pathname !== "/edit" && privilege !== 2)? (
+        ) : (
+          ""
+        )}
+        {router.pathname !== "/edit" && privilege !== 2 ? (
           <button onClick={handleBookingsClick}>Bookings</button>
-        ): ""}
+        ) : (
+          ""
+        )}
       </div>
       <div className={styles.rightSide}>
         {privilege > 0 ? (

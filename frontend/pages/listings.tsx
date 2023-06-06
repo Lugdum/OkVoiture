@@ -19,7 +19,9 @@ const Listings = () => {
   const [listings, setListings] = useState<Listing[]>([]);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [errorMessageBooking, setErrorMessageBooking] = useState<string | null>();
+  const [errorMessageBooking, setErrorMessageBooking] = useState<
+    string | null
+  >();
 
   useEffect(() => {
     axios
@@ -58,7 +60,11 @@ const Listings = () => {
             {listing.pricePerDay}
           </p>
 
-          {user?.role === "particulier"? <BookingForm listingId={listing.id}/> : "" }
+          {user?.role === "particulier" ? (
+            <BookingForm listingId={listing.id} />
+          ) : (
+            ""
+          )}
         </div>
       ))}
     </div>

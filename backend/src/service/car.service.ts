@@ -35,4 +35,11 @@ export class CarService {
   async add(car: CarEntity): Promise<CarEntity> {
     return await this.carsRepository.save(car);
   }
+
+  async update(id: number, car: CarEntity): Promise<CarEntity> {
+    await this.carsRepository.update(id, car);
+    return this.carsRepository.findOne({
+      where: { id: id },
+    });
+  }
 }
