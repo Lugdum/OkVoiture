@@ -52,6 +52,6 @@ export class CarEntity {
     type: () => [BookingEntity],
     description: 'The booking of the car (join)',
   })
-  @OneToMany(() => BookingEntity, (booking) => booking.car)
+  @OneToMany(() => BookingEntity, (booking) => booking.car, { cascade: true })
   bookings: BookingEntity[];
 }

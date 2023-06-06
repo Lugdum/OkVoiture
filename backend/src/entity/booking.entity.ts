@@ -39,6 +39,9 @@ export class BookingEntity {
     type: () => CarEntity,
     description: 'The car of the booking (join)',
   })
-  @ManyToOne(() => CarEntity, { eager: true })
+  @ManyToOne((type) => CarEntity, (car) => car.bookings, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
   car: CarEntity;
 }

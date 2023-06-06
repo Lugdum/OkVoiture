@@ -51,6 +51,14 @@ const Form = () => {
   const [pricePerDayEdit, setPricePerDayEdit] = useState("");
   const [imageEdit, setImageEdit] = useState("");
 
+  interface Booking {
+    id: number;
+    startDate: string;
+    endDate: string;
+  }
+
+  const [bookingsForSelectedCar, setBookingsForSelectedCar] = useState([]);
+
   // Update cars scroll bar
   useEffect(() => {
     const fetchCars = async () => {
@@ -69,6 +77,23 @@ const Form = () => {
     };
     fetchCars();
   }, [user?.id]);
+
+  useEffect(() => {
+    // Function to fetch the bookings for a car
+    const fetchBookingsForCar = async (carId: number) => {
+      try {
+        const response = await axios.get(`http://localhost:4000/bookings/car/${carId}`);
+        if (response.status === 200)
+          setBookingsForSelectedCar(response.data);
+      } catch (error) {
+        console.error('Error fetching bookings for car:', error);
+      }
+    };
+    if (selectedCarEdit)
+      fetchBookingsForCar(selectedCarEdit);
+    else
+      setBookingsForSelectedCar([]);
+  }, [selectedCarEdit]);
 
   // Call API to add a car
   const submitCar = async (e: React.FormEvent) => {
@@ -219,7 +244,7 @@ const Form = () => {
       ) : null}
 
       {/* Form to edit a car */}
-      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md mt-20 ${selectedCarEdit ? (user?.role === "loueur" ? 'h-[79vh]':'h-[19vh]') : 'h-[13vh]'} ${styles.form}`} onSubmit={submitEditCar}>
+      <form className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md mt-20 ${selectedCarEdit ? (user?.role === "loueur" ? 'h-[79vh]':'h-[19vh]') : 'h-[13vh]'} bg-white`} onSubmit={submitEditCar}>
         <label className={styles.label}>
           <strong>Gérer les voitures</strong>
         </label>
@@ -312,6 +337,17 @@ const Form = () => {
           </button>
         ) : ""}
       </form>
+      {(bookingsForSelectedCar.length !== 0 && user?.role === 'admin') ? (
+        <div className="`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md mt-20 bg-white">
+          <h2 className="text-2xl font-semibold mb-4">Réservations pour la voiture sélectionnée</h2>
+          {bookingsForSelectedCar.map((booking: Booking) => (
+            <div key={booking.id} className="border-t border-gray-200 pt-4">
+              <p>Date de début: {booking.startDate}</p>
+              <p>Date de fin: {booking.endDate}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -24,6 +24,15 @@ const BookingsPage: React.FC = () => {
     }
   }, [user, router]);
 
+  // User Infos
+  interface User {
+    id: number;
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+  }
+
   // Car Infos
   interface Car {
       id: number;
@@ -41,7 +50,7 @@ const BookingsPage: React.FC = () => {
         pricePerDay: string;
         city: string;
         car: Car;
-        user: number;
+        user: User;
     }
 
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -49,6 +58,7 @@ const BookingsPage: React.FC = () => {
     const [startDateEdit, setStartDateEdit] = useState('');
     const [endDateEdit, setEndDateEdit] = useState('');
     const [errorMessageBooking, setErrorMessageBooking] = useState('');
+    const [showConfirmation, setShowConfirmation] = useState(false);
 
     useEffect(() => {
       const fetchBookingsAndCarInfos = async () => {
@@ -156,7 +166,7 @@ const BookingsPage: React.FC = () => {
               : booking
           );
           setBookings(updatedBookings);
-          handleCancelClick(); // Reset editing state after submission
+          handleCancelClick();
         } catch (error) {
           console.error(error);
         }
@@ -176,9 +186,10 @@ const BookingsPage: React.FC = () => {
           // Remove booking from state
           const updatedBookings = bookings.filter((booking) => booking.id !== id);
           setBookings(updatedBookings);
-          if (editing === id) {
-            handleCancelClick(); // Reset editing state if deleted booking was being edited
-          }
+          if (editing === id)
+            handleCancelClick();
+          setShowConfirmation(true);
+          setTimeout(() => setShowConfirmation(false), 2000);
         } catch (error) {
           console.error(error);
         }
@@ -186,7 +197,28 @@ const BookingsPage: React.FC = () => {
 
     return (
       <div className="flex flex-col items-center space-y-6 mb-7">
-      {bookings.map((booking) => (
+        {showConfirmation && (
+          <div className="fixed top-12 bg-green-500 text-white px-4 py-2 rounded mt-4 mr-4 z-50 transition-transform duration-200 transform translate-y-[-100%]">
+            Booking Deleted
+          </div>
+        )}
+      {bookings
+        .sort((a, b) => {
+          if (a.user.id < b.user.id) {
+            return -1;
+          } else if (a.user.id > b.user.id) {
+            return 1;
+          } else {
+            if (a.car.id < b.car.id) {
+              return -1;
+            } else if (a.car.id > b.car.id) {
+              return 1;
+            } else {
+              return 0;
+            }
+          }
+        })
+        .map((booking) => (
           <div key={booking.id} className="w-3/5 mt-7 bg-white shadow-md rounded-lg p-6 flex flex-col space-y-4 md:space-y-0 md:flex-row md:items-center md:justify-between md:space-x-6">
           {editing === booking.id ? (
               <form onSubmit={(e) => {
@@ -216,6 +248,7 @@ const BookingsPage: React.FC = () => {
                 alt={`${booking.car.make} ${booking.car.model}`}
               />
               <div className="md:flex-1">
+                  {user?.role === "admin"? (<p className="text-gray-700"><span className="font-semibold">User :</span> {booking.user.name} ({booking.user.email})</p>) : ""}
                   <p className="text-gray-700"><span className="font-semibold">Car :</span> {booking.car.model} {booking.car.make} ({booking.car.year})</p>
                   <p className="text-gray-700"><span className="font-semibold">Start Date:</span> {booking.startDate}</p>
                   <p className="text-gray-700"><span className="font-semibold">End Date:</span> {booking.endDate}</p>
