@@ -4,7 +4,6 @@ import { AuthContext } from "../src/contexts/AuthContext";
 import BookingForm from "../src/components/BookingForm";
 import { useFetchCars } from "../hooks/useListings";
 import { Car } from "../src/types";
-import Image from "next/image";
 
 // Page with all cars
 const Listings = () => {
@@ -19,7 +18,7 @@ const Listings = () => {
           key={car.id}
           className={`m-2 w-2/5 shadow-md transition-all duration-300 flex flex-col items-center justify-center rounded-lg bg-color1`}
         >
-          <Image
+          <img
             src={car.imageUrl}
             alt={`${car.make} ${car.model}`}
             className="w-3/4 h-72 object-cover rounded-lg"
