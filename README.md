@@ -51,19 +51,21 @@ CREATE DATABASE OkVoiture;
 
 ### Lancement du projet en local
 
-1. Naviguez dans le dossier backend :
+1. Ouvrez le fichier .env a la racine et changez `DB_HOST=db` par `DB_HOST=localhost`, sauvegardez et quittez.
+
+2. Naviguez dans le dossier backend :
 
 ```bash
 cd backend
 ```
 
-2. Installez les dépendances du projet :
+3. Installez les dépendances du projet :
 
 ```
 npm install
 ```
 
-3. Lancez le projet :
+4. Lancez le projet :
 
 ```bash
 npm run start
@@ -77,19 +79,19 @@ npm test:booking
 npm test
 ```
 
-4. Dans un autre terminal, revenez au dossier principal du projet et naviguez dans le dossier frontend :
+5. Dans un autre terminal, revenez au dossier principal du projet et naviguez dans le dossier frontend :
 
 ```bash
 cd frontend
 ```
 
-5. Installez les dépendances du projet :
+6. Installez les dépendances du projet :
 
 ```bash
 npm install
 ```
 
-6. Lancez le projet :
+7. Lancez le projet :
 
 ```bash
 npm run dev
