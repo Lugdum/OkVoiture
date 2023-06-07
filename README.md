@@ -35,6 +35,22 @@ Le site devrait maintenant être accessible à l'adresse `http://localhost:3000/
 
 ## Installation et lancement du projet sans Docker (pour les tests)
 
+### Création de la base de données
+
+1. Installez PostgreSQL si ce n'est pas déjà fait. Vous pouvez trouver les instructions d'installation sur le [site officiel de PostgreSQL](https://www.postgresql.org/download/).
+
+2. Ouvrez un terminal et lancez un terminal PostgreSQL en tapant `psql`.
+
+3. Une fois connecté, vous pouvez créer la base de données en utilisant la commande suivante :
+
+```sql
+CREATE DATABASE OkVoiture;
+```
+
+4. Vous pouvez maintenant vous déconnecter de PostgreSQL en utilisant la commande `\q`.
+
+### Lancement du projet en local
+
 1. Naviguez dans le dossier backend :
 
 ```bash
@@ -79,7 +95,8 @@ npm install
 npm run dev
 ```
 
-Le site devrait maintenant être accessible à l'adresse `http://localhost:3000/`.
+Le site devrait maintenant être accessible à l'adresse `http://localhost:3000/`.  
+Il n'y a pas de données de base quand on lance en local, il faut créer la 
 
 ## Données de base
 
