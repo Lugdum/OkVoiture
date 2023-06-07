@@ -27,7 +27,7 @@ export class CarService {
     });
   }
 
-  async remove(id: string): Promise<{ message: string }> {
+  async remove(id: number): Promise<{ message: string }> {
     let a = await this.carsRepository.delete(id);
     return { message: 'Car deleted' };
   }

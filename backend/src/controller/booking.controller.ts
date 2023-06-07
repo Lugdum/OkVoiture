@@ -21,8 +21,13 @@ export class BookingController {
   }
 
   @Get('usr/:id')
-  findAllPerUsr(@Param('id') id: number) {
-    return this.bookingService.findAllPerUser(id);
+  async findAllPerUsr(@Param('id') id: number) {
+    let booking = await this.bookingService.findAllPerUser(id);
+    let bookingNoPwd = booking.map((b) => {
+      delete b.user.password;
+      return b;
+    });
+    return bookingNoPwd;
   }
 
   @Get('car/:id')
@@ -31,12 +36,20 @@ export class BookingController {
   }
 
   @Get('available/:id')
-  findAvailabe(
+  async findAvailabe(
     @Param('id') id: number,
     @Query('startDate') startDate: Date,
     @Query('endDate') endDate: Date,
   ) {
-    return this.bookingService.findAvailabe(id, startDate, endDate);
+    let booking = await this.bookingService.findAvailabe(
+      id,
+      startDate,
+      endDate,
+    );
+    return booking.map((b) => {
+      delete b.user.password;
+      return b;
+    });
   }
 
   @Get(':id')
@@ -56,7 +69,7 @@ export class BookingController {
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() booking: BookingEntity) {
+  async update(@Param('id') id: number, @Body() booking: BookingEntity) {
     return this.bookingService.update(id, booking);
   }
 }

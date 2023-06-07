@@ -29,15 +29,7 @@ describe('AppController (booking)', () => {
     carService = moduleFixture.get(CarService);
     bookingService = moduleFixture.get(BookingService);
 
-    const user = await userService.create({
-      name: 'Test User',
-      email: 'user@example.com',
-      id: 1,
-      cars: [],
-      role: UserRole.PARTICULIER,
-      password: '1234',
-    });
-
+    // Add a user
     const owner = await userService.create({
       name: 'Test Owner',
       email: 'owner@example.com',
@@ -47,6 +39,7 @@ describe('AppController (booking)', () => {
       password: '1234',
     });
 
+    // Add a car
     const car = await carService.add({
       id: 1,
       make: 'Test Make',
@@ -55,10 +48,22 @@ describe('AppController (booking)', () => {
       pricePerDay: 30,
       city: 'Papeete',
       bookings: [],
-      owner: null,
-      imageUrl: null,
+      owner: owner,
+      imageUrl:
+        'https://m.media-amazon.com/images/I/71g4V88VQZL._AC_SL1500_.jpg',
     });
 
+    // Add a user with the car
+    const user = await userService.create({
+      name: 'Test User',
+      email: 'user@example.com',
+      id: 1,
+      cars: [car],
+      role: UserRole.PARTICULIER,
+      password: '1234',
+    });
+
+    // Add a booking with the user and the car
     await bookingService.add({
       startDate: new Date('2023-05-30'),
       endDate: new Date('2023-06-30'),
@@ -68,6 +73,7 @@ describe('AppController (booking)', () => {
     });
   });
 
+  // Test adding a booking
   it('/bookings (POST)', () => {
     return request(app.getHttpServer())
       .post('/bookings')
@@ -76,23 +82,22 @@ describe('AppController (booking)', () => {
         endDate: '2023-06-30',
         userId: 1,
         carId: 1,
-        city: 'Papeete',
       })
       .expect(201)
       .expect('Content-Type', /json/)
       .expect((response) => {
         expect(response.body).toHaveProperty('id');
-        expect(
-          new Date(response.body.startDate).toISOString().split('T')[0],
-        ).toEqual('2023-05-30');
-        expect(
-          new Date(response.body.endDate).toISOString().split('T')[0],
-        ).toEqual('2023-06-30');
-        expect(response.body.userId).toEqual(1);
-        expect(response.body.carId).toEqual(1);
+        expect(response.body).toEqual({
+          id: response.body.id,
+          startDate: '2023-05-30',
+          endDate: '2023-06-30',
+          userId: 1,
+          carId: 1,
+        });
       });
   });
 
+  // Test getting a booking with id
   it('/bookings/:id (GET)', () => {
     return request(app.getHttpServer())
       .get('/bookings/1')
@@ -111,6 +116,7 @@ describe('AppController (booking)', () => {
       });
   });
 
+  // Test deleting a booking
   it('/bookings/:id (DELETE)', () => {
     return request(app.getHttpServer())
       .delete('/bookings/1')
@@ -118,6 +124,7 @@ describe('AppController (booking)', () => {
       .expect({ message: 'Booking deleted' });
   });
 
+  // Test getting all bookings
   it('/bookings (GET)', () => {
     return request(app.getHttpServer())
       .get('/bookings')
@@ -134,6 +141,75 @@ describe('AppController (booking)', () => {
         ).toEqual('2023-06-30');
         expect(response.body[0].user.id).toEqual(1);
         expect(response.body[0].car.id).toEqual(1);
+      });
+  });
+
+  // Test getting all bookings per user
+  it('/bookings/usr/:id (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/bookings/usr/1')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((response) => {
+        expect(response.body[0]).toEqual({
+          id: 1,
+          startDate: '2023-05-30',
+          endDate: '2023-06-30',
+          car: { id: 1 },
+          user: response.body[0].user,
+        });
+      });
+  });
+
+  // Test getting all bookings per car
+  it('/bookings/car/:id (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/bookings/car/1')
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((response) => {
+        expect(response.body[0]).toEqual({
+          id: 1,
+          startDate: '2023-05-30',
+          endDate: '2023-06-30',
+        });
+      });
+  });
+
+  // Test finding available bookings
+  it('/bookings/available/:id (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/bookings/available/1')
+      .query({ startDate: '2023-07-01', endDate: '2023-07-31' })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((response) => {
+        expect(response.body).toHaveLength(0);
+      });
+  });
+
+  // Test updating a booking
+  it('/bookings/:id (PUT)', () => {
+    return request(app.getHttpServer())
+      .put('/bookings/1')
+      .send({
+        startDate: '2023-05-30',
+        endDate: '2023-07-30',
+        userId: 1,
+        carId: 1,
+      })
+      .expect(200)
+      .expect('Content-Type', /json/)
+      .expect((response) => {
+        expect(response.body).toEqual({
+          id: 1,
+          startDate: '2023-05-30',
+          endDate: '2023-07-30',
+          user: response.body.user,
+          car: response.body.car,
+          carId: 1,
+          userId: 1,
+        });
       });
   });
 

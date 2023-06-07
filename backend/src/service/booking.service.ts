@@ -64,8 +64,7 @@ export class BookingService {
       where: { id: id },
     });
 
-    if (!booking)
-      console.error("Booking not found mais ca devrait pas arriver j'espere");
+    if (!booking) console.error('Booking not found');
     return this.bookingsRepository.save({ ...booking, ...bookingData });
   }
 }

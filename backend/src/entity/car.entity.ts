@@ -38,7 +38,7 @@ export class CarEntity {
     example: 'https://www.largus.fr/images/images/ORPHEA_105286_1.jpg',
     description: 'The URL of the car image',
   })
-  @Column({ nullable: true })
+  @Column()
   imageUrl: string;
 
   @ApiProperty({

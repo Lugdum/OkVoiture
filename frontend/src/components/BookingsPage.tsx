@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { User, Car, Booking } from "../types";
 import { useCar } from "../../hooks/useEdit";
+import Image from "next/image";
 
 interface Arg {
   booking: Booking;
@@ -92,9 +93,9 @@ const BookingsPage: React.FC<Arg> = ({
         <>
           {/* Display bookings data */}
           {/* Cool image */}
-          <img
+          <Image
             className="w-16 h-16 md:w-24 md:h-24 object-cover rounded-full"
-            src={car?.imageUrl}
+            src={car?.imageUrl || ""}
             alt={`${car?.make} ${car?.model}`}
           />
           {/* All fields (User, Car, Start/End Date) */}

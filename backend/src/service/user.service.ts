@@ -21,6 +21,13 @@ export class UserService {
     return a;
   }
 
+  async findOneById(id: number): Promise<UserEntity> {
+    let user = await this.usersRepository.findOne({
+      where: { id },
+    });
+    return user;
+  }
+
   async findOnePwd(
     @Query('email') email: string,
     @Query('password') password: string,
@@ -31,8 +38,9 @@ export class UserService {
     return a;
   }
 
-  async remove(id: string): Promise<{ message: string }> {
+  async remove(id: number): Promise<{ message: string }> {
     let a = await this.usersRepository.delete(id);
+    if (!a.affected) return { message: 'User not found' };
     return { message: 'User deleted' };
   }
 

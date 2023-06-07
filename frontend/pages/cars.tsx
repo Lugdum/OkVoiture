@@ -53,6 +53,7 @@ const Form = () => {
     e.preventDefault();
 
     const carData = {
+      id: 0,
       make: make,
       model: model,
       year: year,
@@ -85,6 +86,7 @@ const Form = () => {
 
     if (selectedCarEdit) {
       const carData = {
+        id: 0,
         make: makeEdit,
         model: modelEdit,
         year: yearEdit,
@@ -182,12 +184,13 @@ const Form = () => {
             required
           />
 
-          <label>URL de l'image</label>
+          <label>URL de l&aposimage</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="text"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
+            required
           />
 
           <button
@@ -239,6 +242,7 @@ const Form = () => {
               type="text"
               value={makeEdit}
               onChange={(e) => setMakeEdit(e.target.value)}
+              required
             />
 
             <label>Model of the car</label>
@@ -247,6 +251,7 @@ const Form = () => {
               type="text"
               value={modelEdit}
               onChange={(e) => setModelEdit(e.target.value)}
+              required
             />
 
             <label>Price per day</label>
@@ -255,6 +260,7 @@ const Form = () => {
               type="number"
               value={pricePerDayEdit}
               onChange={(e) => setPricePerDayEdit(e.target.value)}
+              required
             />
 
             <label>City</label>
@@ -263,6 +269,7 @@ const Form = () => {
               type="text"
               value={cityEdit}
               onChange={(e) => setCityEdit(e.target.value)}
+              required
             />
 
             <label>Year</label>
@@ -271,14 +278,16 @@ const Form = () => {
               type="text"
               value={yearEdit}
               onChange={(e) => setYearEdit(e.target.value)}
+              required
             />
 
-            <label>URL de l'image</label>
+            <label>URL de l&aposimage</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
               value={imageEdit}
               onChange={(e) => setImageEdit(e.target.value)}
+              required
             />
 
             <button

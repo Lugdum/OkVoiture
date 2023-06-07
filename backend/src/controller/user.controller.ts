@@ -15,8 +15,14 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  async findAll() {
+    let users = await this.userService.findAll();
+    let usersNoPwd = users.map((user) => {
+      let userNoPwd = { ...user };
+      delete userNoPwd.password;
+      return userNoPwd;
+    });
+    return usersNoPwd;
   }
 
   @Get('log')
@@ -24,20 +30,39 @@ export class UserController {
     @Query('email') email: string,
     @Query('password') password: string,
   ) {
-    let a = await this.userService.findOnePwd(email, password);
-    if (!a) return { message: 'User not found', code: 404 };
-    return a;
+    if (!password) return { message: 'User not found', code: 404 };
+    let newUser = await this.userService.findOnePwd(email, password);
+    if (!newUser) return { message: 'User not found', code: 404 };
+    let newUserNoPwd = { ...newUser };
+    delete newUserNoPwd.password;
+
+    return newUserNoPwd;
+  }
+
+  @Get(':id')
+  async findOneById(@Param('id') id: number) {
+    let newUser = await this.userService.findOneById(id);
+    if (!newUser) return { message: 'User not found', code: 404 };
+    let newUserNoPwd = { ...newUser };
+    delete newUserNoPwd.password;
+
+    return newUserNoPwd;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.userService.remove(id);
   }
 
   @Post()
   async create(@Body() user: UserEntity) {
-    let a = await this.userService.findOne(user.email);
-    if (a) return { message: 'Email already taken', code: 409 };
-    return this.userService.create(user);
+    let exists = await this.userService.findOne(user.email);
+    if (exists) return { message: 'Email already taken', code: 409 };
+
+    let newUser = await this.userService.create(user);
+    let newUserNoPwd = { ...newUser };
+    delete newUserNoPwd.password;
+
+    return newUserNoPwd;
   }
 }

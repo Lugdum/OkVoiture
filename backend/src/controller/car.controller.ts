@@ -25,12 +25,24 @@ export class CarController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.carService.findOne(id);
+  async findOne(@Param('id') id: number) {
+    let car = await this.carService.findOne(id);
+    if (!car)
+      return {
+        statusCode: 404,
+        message: 'Car not found',
+      };
+    return car;
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: number) {
+    let car = await this.carService.findOne(id);
+    if (!car)
+      return {
+        statusCode: 404,
+        message: 'Car not found',
+      };
     return this.carService.remove(id);
   }
 
