@@ -18,15 +18,6 @@ cars = [
     {"id": 3, "make": "Renault", "model": "Megane", "year": 2019, "city": "Papetee", "pricePerDay": 40, "imageUrl": "https://images.caradisiac.com/images/2/1/2/7/202127/S0-une-voiture-electrique-d-occasion-le-vrai-bon-plan-755449.jpg", "ownerId": 2},
 ]
 
-# Réservations à créer
-bookings = [
-    {"id": 1, "startDate": "2023-06-01", "endDate": "2023-06-03", "userId": 3, "carId": 1},
-    {"id": 2, "startDate": "2023-06-04", "endDate": "2023-06-06", "userId": 4, "carId": 1},
-    {"id": 3, "startDate": "2023-06-04", "endDate": "2023-06-09", "userId": 3, "carId": 2},
-    {"id": 4, "startDate": "2023-06-10", "endDate": "2023-06-11", "userId": 4, "carId": 2},
-    {"id": 5, "startDate": "2023-06-07", "endDate": "2023-06-09", "userId": 3, "carId": 1},
-]
-
 # Créer les utilisateurs
 for user in users:
     response = requests.post(f"{base_url}/users", json=user)
@@ -34,7 +25,3 @@ for user in users:
 # Créer les voitures
 for car in cars:
     response = requests.post(f"{base_url}/cars", json=car)
-
-# Créer les réservations
-for booking in bookings:
-    response = requests.post(f"{base_url}/bookings", json=booking)
