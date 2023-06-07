@@ -7,6 +7,7 @@ import {
   useFetchBookings,
   useUserValidation,
   useEditFormFields,
+  useFetchCities,
 } from "../hooks/useForm";
 import { Booking } from "@/types";
 
@@ -59,6 +60,8 @@ const Form = () => {
 
   const { bookingsForSelectedCar, setBookingsForSelectedCar } =
     useFetchBookings(selectedCarEdit);
+  
+  const cities = useFetchCities();
 
   // Call API to add a car
   const submitCar = async (e: React.FormEvent) => {
@@ -89,6 +92,10 @@ const Form = () => {
     setCity("");
     setPricePerDay("");
     setImageUrl("");
+    setMessageCar("Car added successfully");
+    setTimeout(() => {
+      setMessageCar("");
+    }, 2000);
   };
 
   // Call API to modify a car
@@ -192,13 +199,17 @@ const Form = () => {
           />
 
           <label>City</label>
-          <input
-            className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-            type="text"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            required
-          />
+          <select className={`mb-2 p-2 border border-gray-300 rounded text-lg`}>
+            {cities ? (
+              cities.map((city, index) => (
+                <option key={index} value={city.nom}>
+                  {city.nom}
+                </option>
+              ))
+            ) : (
+              <option>Loading...</option>
+            )}
+          </select>
 
           <label>Prix par jour</label>
           <input
@@ -288,14 +299,18 @@ const Form = () => {
               required
             />
 
-            <label>City</label>
-            <input
-              className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
-              type="text"
-              value={cityEdit}
-              onChange={(e) => setCityEdit(e.target.value)}
-              required
-            />
+          <label>City</label>
+          <select className={`mb-2 p-2 border border-gray-300 rounded text-lg`}>
+            {cities ? (
+              cities.map((city, index) => (
+                <option key={index} value={city.nom}>
+                  {city.nom}
+                </option>
+              ))
+            ) : (
+              <option>Loading...</option>
+            )}
+          </select>
 
             <label>Year</label>
             <input

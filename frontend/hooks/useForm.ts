@@ -124,3 +124,24 @@ export const useEditFormFields = (
     setImageEdit,
   };
 };
+
+export interface City {
+  nom: string;
+  code: string;
+  codeDepartement: string;
+  codeRegion: string;
+  codesPostaux: string[];
+  population: number;
+}
+
+export const useFetchCities = () => {
+  const [cities, setCities] = useState<City[]>([]);
+
+  useEffect(() => {
+    fetch('https://geo.api.gouv.fr/departements/987/communes')
+      .then(response => response.json())
+      .then(data => setCities(data));
+  }, []);
+
+  return cities;
+};
