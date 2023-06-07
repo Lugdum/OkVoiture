@@ -30,7 +30,7 @@ cd OkVoiture
 docker-compose up --build
 ```
 
-Une fois Docker lancé, vous pouvez accéder à l'interface Swagger à l'adresse suivante : `http://localhost:4000/api#/`
+Une fois Docker lancé, vous pouvez accéder à l'interface Swagger à l'adresse suivante : `http://localhost:4000/api#/`  
 Le site devrait maintenant être accessible à l'adresse `http://localhost:3000/`.
 
 ## Installation et lancement du projet sans Docker (pour les tests)
