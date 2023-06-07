@@ -23,7 +23,7 @@ config();
           ? process.env.DB_TEST_DATABASE
           : process.env.DB_DATABASE,
       entities: [BookingEntity, CarEntity, UserEntity],
-      synchronize: true,
+      synchronize: false,
     }),
     CarModule,
     UserModule,
