@@ -1,6 +1,8 @@
 CREATE DATABASE okvoiture;
 CREATE DATABASE okvoiture_test;
 
+\c okvoiture
+
 CREATE TYPE user_role AS ENUM ('admin', 'loueur', 'particulier');
 
 CREATE TABLE user_entity (
@@ -17,25 +19,25 @@ CREATE TABLE car_entity (
     model VARCHAR(255) NOT NULL,
     year INTEGER NOT NULL,
     city VARCHAR(255) NOT NULL,
-    pricePerDay INTEGER NOT NULL,
-    imageUrl VARCHAR(255) NOT NULL,
-    ownerId INTEGER NOT NULL,
-    FOREIGN KEY (ownerId) REFERENCES user_entity (id)
+    "pricePerDay" INTEGER NOT NULL,
+    "imageUrl" VARCHAR(255) NOT NULL,
+    "ownerId" INTEGER NOT NULL,
+    FOREIGN KEY ("ownerId") REFERENCES user_entity (id)
 );
 
 CREATE TABLE booking_entity (
     id SERIAL PRIMARY KEY,
-    startDate DATE NOT NULL,
-    endDate DATE NOT NULL,
-    userId INTEGER NOT NULL,
-    carId INTEGER NOT NULL,
-    FOREIGN KEY (userId) REFERENCES user_entity (id),
-    FOREIGN KEY (carId) REFERENCES car_entity (id) ON DELETE CASCADE
+    "startDate" DATE NOT NULL,
+    "endDate" DATE NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "carId" INTEGER NOT NULL,
+    FOREIGN KEY ("userId") REFERENCES user_entity (id),
+    FOREIGN KEY ("carId") REFERENCES car_entity (id) ON DELETE CASCADE
 );
 
-TRUNCATE TABLE IF EXISTS public.user_entity RESTART IDENTITY CASCADE;
-TRUNCATE TABLE IF EXISTS public.car_entity RESTART IDENTITY CASCADE;
-TRUNCATE TABLE IF EXISTS public.booking_entity RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.user_entity RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.car_entity RESTART IDENTITY CASCADE;
+TRUNCATE TABLE public.booking_entity RESTART IDENTITY CASCADE;
 
 INSERT INTO public.user_entity(
 	id, email, name, password, role)
