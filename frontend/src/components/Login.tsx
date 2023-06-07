@@ -3,16 +3,18 @@ import Modal from "react-modal";
 import axios from "axios";
 import { ModalContext } from "../contexts/modalContext";
 import { AuthContext } from "../contexts/AuthContext";
-import "../styles/Listings.module.css";
 import { useRouter } from "next/router";
+import { login_ok } from "../../services/apiUtils";
 
 Modal.setAppElement("#__next");
 
+// Login component
 const Login: FC = () => {
   const { loginModalIsOpen, setLoginModalIsOpen } = useContext(ModalContext);
   const { login } = useContext(AuthContext);
   const router = useRouter();
 
+  // Center Modal
   const customStyles = {
     content: {
       top: "50%",
@@ -25,53 +27,35 @@ const Login: FC = () => {
     overlay: { zIndex: 1000 },
   };
 
+  // User infos
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  const login_ok = async (email: string) => {
-    try {
-      const response = await axios.get("http://localhost:4000/users/log", {
-        params: { email: email, password: password },
-      });
-
-      console.log(response.data);
-      if (!response.data.code) {
-        let p = 1;
-        if (response.data.role === "particulier") p = 1;
-        else if (response.data.role === "loueur") p = 2;
-        else if (response.data.role === "admin") p = 3;
-        login(response.data, p);
-        return p;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    return 0;
-  };
-
+  // Call API to try to log in
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check if email is valid or if it's the admin
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email) && email != "admin") {
       setLoginError("Format de l'email incorrect");
       return;
     }
 
-    const isLoggedIn = await login_ok(email);
-    console.log(isLoggedIn);
+    // Check if login infos are corrects
+    const isLoggedIn = await login_ok(email, password, login);
 
     if (isLoggedIn == 0) {
       setLoginError("Email ou mot de passe incorrect");
-    } else {
-      setLoginModalIsOpen(false);
-      setEmail("");
-      setPassword("");
-      setLoginError("");
-      if (isLoggedIn == 2) router.push("/form");
+      return;
     }
+
+    setLoginModalIsOpen(false);
+    setEmail("");
+    setPassword("");
+    setLoginError("");
+    if (isLoggedIn == 2) router.push("/cars");
   };
 
   return (

@@ -2,15 +2,16 @@ import { FC, useContext, useState } from "react";
 import Modal from "react-modal";
 import axios from "axios";
 import { ModalContext } from "../contexts/modalContext";
-import { AuthContext } from "../contexts/AuthContext";
-import "../styles/Listings.module.css";
+import { register_ok } from "../../services/apiUtils";
 
 Modal.setAppElement("#__next");
 
+// Register component
 const Register: FC = () => {
   const { registerModalIsOpen, setRegisterModalIsOpen } =
     useContext(ModalContext);
 
+  // Center Modal
   const customStyles = {
     content: {
       top: "50%",
@@ -23,57 +24,34 @@ const Register: FC = () => {
     overlay: { zIndex: 1000 },
   };
 
+  // User infos
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [registerError, setRegisterError] = useState("");
   const [role, setRole] = useState("particulier");
 
-  const register_ok = async (
-    email: string,
-    name: string,
-    password: string,
-    role: string
-  ) => {
-    try {
-      console.log(email, name, password, role);
-      const response = await axios.post("http://localhost:4000/users", {
-        email: email,
-        name: name,
-        password: password,
-        role: role,
-      });
-      console.log(response.data);
-      if (!response.data.code) {
-        return true;
-      }
-    } catch (error) {
-      console.error(error);
-    }
-
-    return false;
-  };
-
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check if email is valid
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setRegisterError("Format de l'email incorrect");
       return;
     }
 
+    // Check if register infos are corrects
     const isLoggedIn = await register_ok(email, name, password, role);
-    console.log(isLoggedIn);
 
     if (!isLoggedIn) {
       setRegisterError("Cet email est déjà utilisé");
-    } else {
-      setRegisterModalIsOpen(false);
-      setEmail("");
-      setPassword("");
-      setRegisterError("");
     }
+
+    setRegisterModalIsOpen(false);
+    setEmail("");
+    setPassword("");
+    setRegisterError("");
   };
 
   return (
@@ -84,6 +62,7 @@ const Register: FC = () => {
       contentLabel="Register Modal"
     >
       <h2>Connexion</h2>
+      {/* Show form to register */}
       <form onSubmit={handleRegister}>
         <input
           type="text"
@@ -107,6 +86,7 @@ const Register: FC = () => {
           required
         />
 
+        {/* Scroll bar to select role */}
         <select value={role} onChange={(e) => setRole(e.target.value)} required>
           <option value="particulier">Particulier</option>
           <option value="loueur">Loueur</option>

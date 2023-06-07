@@ -57,7 +57,6 @@ export class BookingController {
 
   @Put(':id')
   update(@Param('id') id: number, @Body() booking: BookingEntity) {
-    console.log(id);
     return this.bookingService.update(id, booking);
   }
 }

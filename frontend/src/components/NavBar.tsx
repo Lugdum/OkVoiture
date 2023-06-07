@@ -2,62 +2,106 @@ import { useContext } from "react";
 import { useRouter } from "next/router";
 import { ModalContext } from "../contexts/modalContext";
 import { AuthContext } from "../contexts/AuthContext";
-import styles from "../styles/NavBar.module.css";
 
+// Navigation bar component
 const NavBar = () => {
+  let { user } = useContext(AuthContext);
+
   const { setLoginModalIsOpen, setRegisterModalIsOpen } =
     useContext(ModalContext);
   const { privilege, logout } = useContext(AuthContext);
-
   const router = useRouter();
 
+  // Logout button
   const handleLogoutClick = () => {
     logout();
   };
 
+  // Home button
   const handleHomeClick = () => {
     router.push("/listings");
   };
 
+  // Cars button
   const handleFormClick = () => {
-    router.push("/form");
+    router.push("/cars");
   };
 
-  const handleAdminClick = () => {
-    router.push("/admin");
-  };
-
+  // Bookings button
   const handleBookingsClick = () => {
-    router.push("/edit");
+    router.push("/bookings");
   };
 
   return (
-    <nav className={styles.nav}>
-      <div className={styles.leftSide}>
+    <nav className={`p-5 flex justify-between bg-color4`}>
+      <div className={`flex`}>
+        {/* Show Home button if connected and not on Home */}
         {(router.pathname !== "/listings" && privilege > 1) ||
-        router.pathname == "/edit" ? (
-          <button onClick={handleHomeClick}>Home</button>
+        router.pathname == "/bookings" ? (
+          <button
+            onClick={handleHomeClick}
+            className={`bg-green-500 hover:bg-green-600 text-white font-normal py-2 px-4 rounded mr-8`}
+          >
+            Home
+          </button>
         ) : (
           ""
         )}
-        {router.pathname !== "/form" && privilege > 1 ? (
-          <button onClick={handleFormClick}>Form</button>
+        {/* Show Cars button if connected as loueur or admin and not on Cars */}
+        {router.pathname !== "/cars" && privilege > 1 ? (
+          <button
+            onClick={handleFormClick}
+            className={`bg-green-500 hover:bg-green-600 text-white font-normal py-2 px-4 rounded mr-8`}
+          >
+            Cars
+          </button>
         ) : (
           ""
         )}
-        {router.pathname !== "/edit" && privilege !== 2 ? (
-          <button onClick={handleBookingsClick}>Bookings</button>
+        {/* Show Booking button if connected as particulier or admin and not on Home */}
+        {router.pathname !== "/bookings" &&
+        privilege !== 2 &&
+        privilege !== 0 ? (
+          <button
+            onClick={handleBookingsClick}
+            className={`bg-green-500 hover:bg-green-600 text-white font-normal py-2 px-4 rounded mr-8`}
+          >
+            Bookings
+          </button>
         ) : (
           ""
         )}
       </div>
-      <div className={styles.rightSide}>
+      <div className={`flex`}>
+        {/* Show user name and logout button if connected */}
         {privilege > 0 ? (
-          <button onClick={handleLogoutClick}>Logout</button>
+          <div>
+            <span
+              className={`inline-block rounded px-4 py-1.5 text-white bg-blue-500 font-bold text-lg mr-10`}
+            >
+              {" "}
+              Welcome {user?.name}
+            </span>
+            <button
+              onClick={handleLogoutClick}
+              className={`bg-green-500 hover:bg-green-600 text-white font-normal py-2 px-4 rounded`}
+            >
+              Logout
+            </button>
+          </div>
         ) : (
           <>
-            <button onClick={() => setLoginModalIsOpen(true)}>Login</button>
-            <button onClick={() => setRegisterModalIsOpen(true)}>
+            {/* Show login and register buttons if not connected */}
+            <button
+              onClick={() => setLoginModalIsOpen(true)}
+              className={`bg-green-500 hover:bg-green-600 text-white font-normal py-2 px-4 rounded mr-8`}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => setRegisterModalIsOpen(true)}
+              className={`bg-green-500 hover:bg-green-600 text-white font-normal py-2 px-4 rounded`}
+            >
               Register
             </button>
           </>

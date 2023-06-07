@@ -17,7 +17,9 @@ export class BookingService {
   findAllPerUser(userId: number): Promise<BookingEntity[]> {
     return this.bookingsRepository
       .createQueryBuilder('booking')
-      .leftJoinAndSelect('booking.car', 'car')
+      .leftJoin('booking.car', 'car')
+      .addSelect('car.id')
+      .leftJoinAndSelect('booking.user', 'user')
       .where('booking.userId = :userId', { userId })
       .getMany();
   }

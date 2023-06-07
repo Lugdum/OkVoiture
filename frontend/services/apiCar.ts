@@ -1,35 +1,22 @@
 import axios from "axios";
+import { User, Car, Booking } from "../src/types";
 
-// User Infos
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-}
+// API to get a car infos with id her id
+export const getCarById = async (carId: number) => {
+  try {
+    const response = await axios.get(`http://localhost:4000/cars/${carId}`);
+    if (response.status === 200) {
+      return response.data;
+    } else {
+      console.log(`Pas de voiture avec l'ID ${carId}`);
+      return null;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
-// Car Infos
-interface Car {
-  make: string;
-  model: string;
-  year: string;
-  pricePerDay: string;
-  imageUrl: string;
-  owner: number;
-}
-
-// Booking Infos
-interface Booking {
-  id: number;
-  startDate: string;
-  endDate: string;
-  pricePerDay: string;
-  city: string;
-  car: Car;
-  user: User;
-}
-
+// API to get all cars of a user if parrticulier, or all cars if admin
 export const getCars = async (userId: number, role: string) => {
   try {
     let response = null;
@@ -54,16 +41,17 @@ export const postCar = async (carData: Car) => {
   }
 };
 
+// Call API to delete a car
 export const deleteCar = async (carId: number) => {
   try {
     const response = await axios.delete(`http://localhost:4000/cars/${carId}`);
     return response;
   } catch (error) {
     console.error(error);
-    throw error;
   }
 };
 
+// Call API to update a car
 export const updateCar = async (carId: number, carData: Car) => {
   try {
     const response = await axios.put(
@@ -73,6 +61,5 @@ export const updateCar = async (carId: number, carData: Car) => {
     return response;
   } catch (error) {
     console.error(error);
-    throw error;
   }
 };

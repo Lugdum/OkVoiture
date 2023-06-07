@@ -5,14 +5,9 @@ import React, {
   FC,
   ReactNode,
 } from "react";
+import { User } from "../types";
 
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
-
+// Auth context
 interface AuthContextProps {
   isAuthenticated: boolean;
   user: User | null;
@@ -21,6 +16,7 @@ interface AuthContextProps {
   logout: () => void;
 }
 
+// Create context
 const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: false,
   user: null,
@@ -29,16 +25,19 @@ const AuthContext = createContext<AuthContextProps>({
   logout: () => {},
 });
 
+// Context properties
 interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Auth provider
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
+  // Connextion state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [privilege, setPrivilege] = useState(0);
 
-  // Check if user is authenticated
+  // Check local storage to get connection infos
   useEffect(() => {
     const userFromStorage = localStorage.getItem("user");
     const privilegeFromStorage = localStorage.getItem("privilege");
@@ -50,6 +49,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
+  // Login functions
   const login = (user: User, privilege: number) => {
     setIsAuthenticated(true);
     setUser(user);
@@ -58,6 +58,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     localStorage.setItem("privilege", privilege.toString());
   };
 
+  // Logout function
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);

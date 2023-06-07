@@ -2,20 +2,22 @@ import axios from "axios";
 import Modal from "react-modal";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import styles from "../src/styles/Listings.module.css";
+import { postBooking } from "../../services/apiBooking";
+import { checkAvailability } from "../../services/apiUtils";
 
 Modal.setAppElement("#__next");
 
-type BookingFormProps = {
-  listingId: string;
-};
+interface Arg {
+  carId: number;
+}
 
-const BookingForm: React.FC<BookingFormProps> = ({ listingId }) => {
+// Form from listing page to book a car
+const BookingForm: React.FC<Arg> = ({ carId }) => {
   let { user } = useContext(AuthContext);
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [errorMessageBooking, setErrorMessageBooking] = useState("");
+  const [messageBooking, setErrorMessageBooking] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
 
   const customStyles = {
@@ -30,68 +32,47 @@ const BookingForm: React.FC<BookingFormProps> = ({ listingId }) => {
     overlay: { zIndex: 1000 },
   };
 
-  const checkAvailability = async (carId: string) => {
-    // console.log('Checking availability...');
-    try {
-      const availabilityResponse = await axios.get(
-        `http://localhost:4000/bookings/available/${carId}`,
-        {
-          params: {
-            startDate: startDate,
-            endDate: endDate,
-          },
-        }
-      );
-      if (availabilityResponse.data.length !== 0) {
-        // console.log('Car not available');
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  };
-
-  const submitBooking = async (e: React.FormEvent, carId: string) => {
+  // Call API to try to book a car
+  const submitBooking = async (e: React.FormEvent, carId: number) => {
     e.preventDefault();
+
+    // Check if dates are valid and available
     if (startDate >= endDate) {
       setErrorMessageBooking("Les dates entrées sont invalides");
       return;
     }
-    if (!(await checkAvailability(carId))) {
-      // console.log('Setting error message');
+    if (!(await checkAvailability(carId, startDate, endDate))) {
       setErrorMessageBooking("La voiture n'est pas disponible à cette date");
       return;
     }
-    try {
-      const bookingResponse = await axios.post(
-        "http://localhost:4000/bookings",
-        {
-          startDate: startDate,
-          endDate: endDate,
-          car: carId,
-          user: user?.id,
-        }
-      );
-      if (bookingResponse.status !== 201) {
-        setErrorMessageBooking("Erreur lors de l'ajout de la reservation");
-      } else {
-        // Reset fields and add car to scroll bar
-        setErrorMessageBooking("Your booking has been added!");
-        setStartDate("");
-        setEndDate("");
-        setTimeout(() => {
-          setModalOpen(false);
-          setErrorMessageBooking("");
-        }, 2000);
-      }
-    } catch (error) {
-      console.error(error);
+
+    const bookingData = {
+      id: null,
+      startDate: startDate,
+      endDate: endDate,
+      car: carId,
+      user: user?.id || 0,
+    };
+
+    const bookingResponse = await postBooking(bookingData);
+
+    if (bookingResponse === undefined || bookingResponse.status !== 201) {
+      setErrorMessageBooking("Erreur lors de l'ajout de la reservation");
+      return;
     }
+
+    // Reset fields and add car to scroll bar
+    setErrorMessageBooking("Your booking has been added!");
+    setStartDate("");
+    setEndDate("");
+    setTimeout(() => {
+      setModalOpen(false);
+      setErrorMessageBooking("");
+    }, 2000);
   };
 
   return (
+    /* If Book button clicked open Modal */
     <div className="flex flex-col items-center">
       <button
         onClick={() => setModalOpen(true)}
@@ -100,6 +81,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ listingId }) => {
         Book
       </button>
 
+      {/* Modal */}
       <Modal
         isOpen={modalOpen}
         onRequestClose={() => setModalOpen(false)}
@@ -108,11 +90,11 @@ const BookingForm: React.FC<BookingFormProps> = ({ listingId }) => {
       >
         <form
           onSubmit={(e) => {
-            submitBooking(e, listingId);
+            submitBooking(e, carId);
           }}
           className="flex flex-col items-center"
         >
-          {errorMessageBooking !== "Your booking has been added!" ? (
+          {messageBooking !== "Your booking has been added!" ? (
             <div className="flex flex-row justify-between w-full mb-2">
               <div className="flex flex-col mr-20">
                 <label className="font-bold mt-2 ml-10">Start Date</label>
@@ -138,18 +120,20 @@ const BookingForm: React.FC<BookingFormProps> = ({ listingId }) => {
           ) : (
             ""
           )}
-          {errorMessageBooking && (
+          {/* Notify user that the bookings has been added */}
+          {messageBooking && (
             <div
               className={`text-${
-                errorMessageBooking === "Your booking has been added!"
+                messageBooking === "Your booking has been added!"
                   ? "black"
                   : "red"
               }-500 font-bold text-center`}
             >
-              {errorMessageBooking}
+              {messageBooking}
             </div>
           )}
-          {errorMessageBooking !== "Your booking has been added!" ? (
+          {/* Notify user that an error happened */}
+          {messageBooking !== "Your booking has been added!" ? (
             <button
               className="mb-2 px-5 py-2 bg-white text-black border border-gray-300 rounded text-lg cursor-pointer transition-colors duration-300 hover:bg-gray-400"
               type="submit"

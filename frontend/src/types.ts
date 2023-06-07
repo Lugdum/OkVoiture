@@ -20,11 +20,9 @@ export interface Car {
 
 // Booking Infos
 export interface Booking {
-  id: number;
+  id: number | null;
   startDate: string;
   endDate: string;
-  pricePerDay: string;
-  city: string;
-  car: Car;
-  user: User;
+  car: Car | number;
+  user: User | number;
 }

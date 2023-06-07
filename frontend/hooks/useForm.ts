@@ -2,8 +2,9 @@ import { useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { AuthContext } from "../src/contexts/AuthContext";
-import { User, Car, Booking } from "../types";
+import { User, Car, Booking } from "../src/types";
 
+// Hook pour recuperer les infos d'une voiture (tous si admin sinon ceux du user)
 export const useFetchCars = (user: User | null) => {
   const [cars, setCars] = useState<Car[]>([]);
 
@@ -31,6 +32,7 @@ export const useFetchCars = (user: User | null) => {
   return { cars, setCars };
 };
 
+// Hook pour recuperer les bookings en fonction d'une voiture
 export const useFetchBookings = (selectedCarEdit: number | null) => {
   const [bookingsForSelectedCar, setBookingsForSelectedCar] = useState([]);
 
@@ -53,7 +55,8 @@ export const useFetchBookings = (selectedCarEdit: number | null) => {
   return { bookingsForSelectedCar, setBookingsForSelectedCar };
 };
 
-export const useUserValidation = (user: User | null) => {
+// Redirige l'utilisateur s'il n'a pas le bon role (a rien a faire la)
+export const useUserValidation = (user: User | null, role: string) => {
   const { logout } = useContext(AuthContext);
   const router = useRouter();
 
@@ -67,12 +70,13 @@ export const useUserValidation = (user: User | null) => {
       logout();
       router.push("/");
     }
-    if (localUser?.role === "particulier") {
+    if (localUser?.role === role) {
       router.push("/");
     }
   }, [user, router]);
 };
 
+// Hook pour changer la voiture selectionnee
 export const useEditFormFields = (
   selectedCarId: number | null,
   cars: Car[]

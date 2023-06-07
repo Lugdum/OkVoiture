@@ -1,5 +1,6 @@
 import { createContext, Dispatch, SetStateAction } from "react";
 
+// Modal context properties
 interface ModalContextProps {
   loginModalIsOpen: boolean;
   setLoginModalIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -7,6 +8,7 @@ interface ModalContextProps {
   setRegisterModalIsOpen: Dispatch<SetStateAction<boolean>>;
 }
 
+// Create context
 export const ModalContext = createContext<ModalContextProps>({
   loginModalIsOpen: false,
   setLoginModalIsOpen: () => {},

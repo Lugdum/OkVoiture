@@ -1,23 +1,24 @@
 import { useContext, useState, useEffect } from "react";
 import axios from "axios";
-import styles from "../src/styles/Form.module.css";
 import { AuthContext } from "../src/contexts/AuthContext";
-import { postCar, deleteCar, updateCar } from "../services/api";
+import { postCar, deleteCar, updateCar } from "../services/apiCar";
 import {
   useFetchCars,
   useFetchBookings,
   useUserValidation,
   useEditFormFields,
-} from "../hooks/uses";
-import { User, Car, Booking } from "../types";
+} from "../hooks/useForm";
+import { User, Car, Booking } from "../src/types";
 
+// Page to manage cars
 const Form = () => {
   // Get User infos
   let { user } = useContext(AuthContext);
 
   // Redirect if not logged in as loueur
-  useUserValidation(user);
+  useUserValidation(user, "particulier");
 
+  // Car infos
   const { cars, setCars } = useFetchCars(user);
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
@@ -27,6 +28,8 @@ const Form = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const [selectedCarEdit, setSelectedCarEdit] = useState<number | null>(null);
+
+  // Select car infos to edit
   const {
     makeEdit,
     modelEdit,
@@ -48,86 +51,79 @@ const Form = () => {
   // Call API to add a car
   const submitCar = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const carData = {
-        make: make,
-        model: model,
-        year: year,
-        city: city,
-        pricePerDay: pricePerDay,
-        imageUrl: imageUrl,
-        owner: user?.id || 0,
-      };
-      const carResponse = await postCar(carData);
-      if (carResponse === undefined || carResponse.status !== 201) {
-        console.log(
-          "Erreur lors de l'ajout de la voiture mais ca devrait pas arriver"
-        );
-      }
-      // Reset fields and add car to scroll bar
-      else {
-        setCars([...cars, carResponse.data]);
-        setMake("");
-        setModel("");
-        setYear("");
-        setCity("");
-        setPricePerDay("");
-        setImageUrl("");
-      }
-    } catch (error) {
-      console.error(error);
+
+    const carData = {
+      make: make,
+      model: model,
+      year: year,
+      city: city,
+      pricePerDay: pricePerDay,
+      imageUrl: imageUrl,
+      owner: user?.id || 0,
+    };
+
+    const carResponse = await postCar(carData);
+
+    if (carResponse === undefined || carResponse.status !== 201) {
+      console.error(carResponse?.data);
+      return;
     }
+
+    // Reset fields and add car to scroll bar
+    setCars([...cars, carResponse.data]);
+    setMake("");
+    setModel("");
+    setYear("");
+    setCity("");
+    setPricePerDay("");
+    setImageUrl("");
   };
 
+  // Call API to modify a car
   const submitEditSelectedCar = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      if (selectedCarEdit) {
-        const carData = {
-          make: makeEdit,
-          model: modelEdit,
-          year: yearEdit,
-          city: cityEdit,
-          pricePerDay: pricePerDayEdit,
-          imageUrl: imageEdit,
-          owner: user?.id || 0,
-        };
-        const carResponse = await updateCar(selectedCarEdit, carData);
-        if (carResponse.status !== 200) {
-          console.log(
-            "Erreur lors de la modification de la voiture ca devrait pas arriver non plus"
-          );
-        }
-        // Update car in state
-        else {
-          const updatedCars = cars.map((car) =>
-            car.id === selectedCarEdit ? carResponse.data : car
-          );
-          setCars(updatedCars);
-        }
+
+    if (selectedCarEdit) {
+      const carData = {
+        make: makeEdit,
+        model: modelEdit,
+        year: yearEdit,
+        city: cityEdit,
+        pricePerDay: pricePerDayEdit,
+        imageUrl: imageEdit,
+        owner: user?.id || 0,
+      };
+
+      const carResponse = await updateCar(selectedCarEdit, carData);
+
+      if (carResponse === undefined || carResponse.status !== 200) {
+        console.error(carResponse?.data);
+        return;
       }
-    } catch (error) {
-      console.error(error);
+
+      // Update car in scroll bar
+      const updatedCars = cars.map((car) =>
+        car.id === selectedCarEdit ? carResponse.data : car
+      );
+      setCars(updatedCars);
     }
   };
 
+  // Call API to delete a car
   const deleteSelectedCar = async () => {
-    try {
-      if (selectedCarEdit) {
-        const carResponse = await deleteCar(selectedCarEdit);
-        if (carResponse.status !== 200) {
-          console.log(
-            "Erreur lors de la suppression de la voiture comme d'hab ca arrivera pas"
-          );
-        } else {
-          const updatedCars = cars.filter((car) => car.id !== selectedCarEdit);
-          setCars(updatedCars);
-          setSelectedCarEdit(null);
-        }
-      }
-    } catch (error) {
-      console.error(error);
+    if (!selectedCarEdit) return;
+
+    const carResponse = await deleteCar(selectedCarEdit);
+
+    if (carResponse === undefined || carResponse.status !== 200) {
+      console.error(carResponse?.data);
+      return;
     }
+
+    // Delete car in scroll bar
+    const updatedCars = cars.filter((car) => car.id !== selectedCarEdit);
+    setCars(updatedCars);
+    setSelectedCarEdit(null);
   };
 
   return (
@@ -138,10 +134,10 @@ const Form = () => {
           className={`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md h-[67vh] mt-20 bg-white`}
           onSubmit={submitCar}
         >
-          <label className={styles.label}>
+          <label>
             <strong>Voiture</strong>
           </label>
-          <label className={styles.label}>Marque</label>
+          <label>Marque</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="text"
@@ -150,7 +146,7 @@ const Form = () => {
             required
           />
 
-          <label className={styles.label}>Modèle</label>
+          <label>Modèle</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="text"
@@ -159,7 +155,7 @@ const Form = () => {
             required
           />
 
-          <label className={styles.label}>Year</label>
+          <label>Year</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="number"
@@ -168,7 +164,7 @@ const Form = () => {
             required
           />
 
-          <label className={styles.label}>City</label>
+          <label>City</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="text"
@@ -177,7 +173,7 @@ const Form = () => {
             required
           />
 
-          <label className={styles.label}>Prix par jour</label>
+          <label>Prix par jour</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="number"
@@ -186,7 +182,7 @@ const Form = () => {
             required
           />
 
-          <label className={styles.label}>URL de l'image</label>
+          <label>URL de l'image</label>
           <input
             className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
             type="text"
@@ -215,7 +211,7 @@ const Form = () => {
         } bg-white`}
         onSubmit={submitEditSelectedCar}
       >
-        <label className={styles.label}>
+        <label>
           <strong>Gérer les voitures</strong>
         </label>
 
@@ -237,7 +233,7 @@ const Form = () => {
         {/* Car property fields */}
         {selectedCarEdit && user?.role === "loueur" ? (
           <>
-            <label className={styles.label}>Make of the car</label>
+            <label>Make of the car</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
@@ -245,7 +241,7 @@ const Form = () => {
               onChange={(e) => setMakeEdit(e.target.value)}
             />
 
-            <label className={styles.label}>Model of the car</label>
+            <label>Model of the car</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
@@ -253,7 +249,7 @@ const Form = () => {
               onChange={(e) => setModelEdit(e.target.value)}
             />
 
-            <label className={styles.label}>Price per day</label>
+            <label>Price per day</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="number"
@@ -261,7 +257,7 @@ const Form = () => {
               onChange={(e) => setPricePerDayEdit(e.target.value)}
             />
 
-            <label className={styles.label}>City</label>
+            <label>City</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
@@ -269,7 +265,7 @@ const Form = () => {
               onChange={(e) => setCityEdit(e.target.value)}
             />
 
-            <label className={styles.label}>Year</label>
+            <label>Year</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
@@ -277,7 +273,7 @@ const Form = () => {
               onChange={(e) => setYearEdit(e.target.value)}
             />
 
-            <label className={styles.label}>URL de l'image</label>
+            <label>URL de l'image</label>
             <input
               className={`mb-2 p-2 border border-gray-300 rounded text-lg`}
               type="text"
@@ -310,6 +306,7 @@ const Form = () => {
         ) : (
           ""
         )}
+        {/* If connected as admin, show all bookings for a car */}
       </form>
       {bookingsForSelectedCar.length !== 0 && user?.role === "admin" ? (
         <div className="`flex flex-col w-96 mx-auto p-5 shadow-md rounded-md mt-20 bg-white">

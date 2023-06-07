@@ -1,6 +1,7 @@
 import { useEffect, FC } from "react";
 import { useRouter } from "next/router";
 
+// Redirect to /listings
 const Home: FC = () => {
   const router = useRouter();
 
