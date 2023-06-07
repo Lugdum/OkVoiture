@@ -130,17 +130,35 @@ const EditPage: React.FC = () => {
       )}
       {bookings /* Sort by user then by car */
         .sort((a, b) => {
-          if (a.user < b.user) {
+          let aId = 0;
+          let bId = 0;
+          let aCar = 0;
+          let bCar = 0;
+          let aStartDate = new Date(a.startDate);
+          let bStartDate = new Date(b.startDate);
+          typeof a.user !== "number" ? (aId = a.user.id) : (aId = 0);
+          typeof b.user !== "number" ? (bId = b.user.id) : (bId = 0);
+          typeof a.car !== "number" ? (aCar = a.car.id) : (aCar = 0);
+          typeof b.car !== "number" ? (bCar = b.car.id) : (bCar = 0);
+          typeof a.startDate !== "string" ? (aStartDate = new Date(a.startDate)) : (aStartDate = new Date());
+          typeof b.startDate !== "string" ? (bStartDate = new Date(b.startDate)) : (bStartDate = new Date());
+          if (aId < bId) {
             return -1;
-          } else if (a.user > b.user) {
+          } else if (aId> bId) {
             return 1;
           } else {
-            if (a.car < b.car) {
+            if (aCar < bCar) {
               return -1;
-            } else if (a.car > b.car) {
+            } else if (aCar > bCar) {
               return 1;
             } else {
-              return 0;
+              if (aStartDate < bStartDate) {
+                return -1;
+              } else if (aStartDate > bStartDate) {
+                return 1;
+              } else {
+                return 0;
+              }
             }
           }
         })
