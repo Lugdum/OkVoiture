@@ -8,7 +8,18 @@ import {
   useUserValidation,
   useEditFormFields,
 } from "../hooks/useForm";
-import { User, Car, Booking } from "../src/types";
+import { Booking } from "@/types";
+
+// Car Infos
+export interface Car {
+  make: string;
+  model: string;
+  year: string;
+  city: string;
+  pricePerDay: string;
+  imageUrl: string;
+  owner: number;
+}
 
 // Page to manage cars
 const Form = () => {
@@ -28,6 +39,7 @@ const Form = () => {
   const [imageUrl, setImageUrl] = useState("");
 
   const [selectedCarEdit, setSelectedCarEdit] = useState<number | null>(null);
+  const [messageCar, setMessageCar] = useState("");
 
   // Select car infos to edit
   const {
@@ -53,7 +65,6 @@ const Form = () => {
     e.preventDefault();
 
     const carData = {
-      id: 0,
       make: make,
       model: model,
       year: year,
@@ -86,7 +97,6 @@ const Form = () => {
 
     if (selectedCarEdit) {
       const carData = {
-        id: 0,
         make: makeEdit,
         model: modelEdit,
         year: yearEdit,
@@ -108,6 +118,10 @@ const Form = () => {
         car.id === selectedCarEdit ? carResponse.data : car
       );
       setCars(updatedCars);
+      setMessageCar("Car updated successfully");
+      setTimeout(() => {
+        setMessageCar("");
+      }, 2000);
     }
   };
 
@@ -126,10 +140,21 @@ const Form = () => {
     const updatedCars = cars.filter((car) => car.id !== selectedCarEdit);
     setCars(updatedCars);
     setSelectedCarEdit(null);
+    setMessageCar("Car deleted successfully");
+    setTimeout(() => {
+      setMessageCar("");
+    }, 2000);
   };
 
   return (
     <div className="flex justify-center items-center h-[80vh]">
+      {messageCar && (
+  <div
+    className={`fixed top-0 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded shadow-md z-50 mt-3`}
+  >
+    {messageCar}
+  </div>
+)}
       {/* Form to add a car */}
       {user?.role === "loueur" ? (
         <form

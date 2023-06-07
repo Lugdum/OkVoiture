@@ -1,6 +1,17 @@
 import axios from "axios";
 import { User, Car, Booking } from "../src/types";
 
+// Car Infos
+export interface CarNoId {
+  make: string;
+  model: string;
+  year: string;
+  city: string;
+  pricePerDay: string;
+  imageUrl: string;
+  owner: number;
+}
+
 // API to get a car infos with id her id
 export const getCarById = async (carId: number) => {
   try {
@@ -32,7 +43,7 @@ export const getCars = async (userId: number, role: string) => {
 };
 
 // Call API to add a car
-export const postCar = async (carData: Car) => {
+export const postCar = async (carData: CarNoId) => {
   try {
     const response = await axios.post("http://localhost:4000/cars", carData);
     return response;
@@ -52,7 +63,7 @@ export const deleteCar = async (carId: number) => {
 };
 
 // Call API to update a car
-export const updateCar = async (carId: number, carData: Car) => {
+export const updateCar = async (carId: number, carData: CarNoId) => {
   try {
     const response = await axios.put(
       `http://localhost:4000/cars/${carId}`,
